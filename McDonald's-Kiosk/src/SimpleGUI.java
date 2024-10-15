@@ -1,96 +1,305 @@
 import javax.swing.*;
+import org.json.JSONArray;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleGUI extends JFrame {
-    private JButton button;
-    private JLabel logoLabel;
-    private ImageIcon icon;
+    private ArrayList<Menu> menuList = new ArrayList<>();
+    private Customer customer = new Customer(); // 고객 객체 추가
+    private static AtomicInteger orderNumber = new AtomicInteger(1); // 대기 번호 생성
 
+    // 메뉴 클래스 정의
+    class Menu {
+        private String name;
+        private double price;
+        private String description;
+        private ImageIcon image;
+
+        Menu(String name, double price, String description, ImageIcon image) {
+            this.name = name;
+            this.price = price;
+            this.description = description;
+            this.image = image;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public ImageIcon getImage() {
+            return image;
+        }
+    }
+
+    // 고객 클래스 정의
+    class Customer {
+        private HashMap<Menu, Integer> orderList = new HashMap<>();
+
+        void addMenu(Menu menu) {
+            orderList.put(menu, orderList.getOrDefault(menu, 0) + 1);
+        }
+
+        void removeMenu(Menu menu) {
+            if (orderList.containsKey(menu)) {
+                orderList.put(menu, orderList.get(menu) - 1);
+                if (orderList.get(menu) == 0) {
+                    orderList.remove(menu);
+                }
+            }
+        }
+
+        HashMap<Menu, Integer> getOrderList() {
+            return orderList;
+        }
+    }
+
+    // 생성자
     public SimpleGUI() {
-        // 기본적인 JFrame 설정
-        setTitle("McDonald Kiosk");
+        setTitle("McDonald's Kiosk");
         setSize(462, 820);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new FlowLayout()); // 레이아웃 매니저 설정
+        setLayout(new BorderLayout());
 
-        // 이미지 로드 및 크기 조정
-        icon = new ImageIcon(".//imgs//logo.png");  // 이미지 파일의 경로 설정
-        Image image = icon.getImage(); // ImageIcon을 Image로 변환
-        Image scaledImage = image.getScaledInstance(300, 300, Image.SCALE_SMOOTH); // 원하는 크기로 조정 (300x300)
-        ImageIcon scaledIcon = new ImageIcon(scaledImage); // 다시 ImageIcon으로 변환
-
-        // 로고 라벨 추가
-        logoLabel = new JLabel("Welcome to McDonald", JLabel.CENTER);
-        logoLabel.setFont(new Font("Arial", Font.BOLD, 40)); // 글꼴 설정
-        logoLabel.setIcon(scaledIcon); // 조정된 이미지 사용
-
-        add(logoLabel);
-        button = new JButton("주문하기");
-        button.setBackground(Color.WHITE);
-
-        // 수직 정렬 설정
-        logoLabel.setVerticalTextPosition(SwingConstants.BOTTOM); // 아이콘 아래에 텍스트 배치
-        logoLabel.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 중앙 정렬
-
-        add(button);
-
-        // 버튼 액션 리스너 추가
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                howToEatPage();
-            }
-        });
+        // 처음에 <먹고가기>, <포장하기> 옵션 선택 페이지 표시
+        howToEatPage();
     }
-    
-    private JButton toGo;
-    private JButton inRes;
-    private ImageIcon toGoImg;
-    
+
+    // <먹고가기>, <포장하기> 옵션 선택 페이지
     private void howToEatPage() {
-        // 현재 화면을 초기화하고 새로운 페이지 구성
         getContentPane().removeAll();
-        repaint(); // 기존 화면을 지우기 위해 필요
+        repaint();
 
-        // 새로운 화면 설정
-        JLabel nextPageLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
-        nextPageLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        add(nextPageLabel, BorderLayout.CENTER);
-        
-        toGo = new JButton("Take Out");
-        inRes = new JButton("Eat In");
-        
-        toGoImg = new ImageIcon(".//imgs//togo.png"); // 이미지 파일의 경로 설정
-        
-        // 버튼에 이미지 추가
-        toGo.setIcon(toGoImg);
-        inRes.setIcon(toGoImg);
+        JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        add(titleLabel, BorderLayout.NORTH);
 
-        // 수직 정렬 설정
-        toGo.setVerticalTextPosition(SwingConstants.BOTTOM);
-        toGo.setHorizontalTextPosition(SwingConstants.CENTER);
-        toGo.setBackground(Color.WHITE);
-        inRes.setVerticalTextPosition(SwingConstants.BOTTOM);
-        inRes.setHorizontalTextPosition(SwingConstants.CENTER);
-        inRes.setBackground(Color.WHITE);
+        JButton toGoButton = new JButton("Take Out");
+        JButton eatInButton = new JButton("Eat In");
 
-        // 버튼 추가
-        add(toGo);
-        add(inRes);
+        toGoButton.setFont(new Font("Arial", Font.BOLD, 20));
+        eatInButton.setFont(new Font("Arial", Font.BOLD, 20));
 
-        // 새 화면 표시
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2, 10, 10));
+        buttonPanel.add(toGoButton);
+        buttonPanel.add(eatInButton);
+        add(buttonPanel, BorderLayout.CENTER);
+
+        // 버튼 클릭 시 메뉴 페이지로 이동
+        toGoButton.addActionListener(e -> displayMenuPage());
+        eatInButton.addActionListener(e -> displayMenuPage());
+
         revalidate();
-        repaint(); // 다시 그리기
+        repaint();
+    }
+
+    // 메뉴 페이지
+    private void displayMenuPage() {
+        getContentPane().removeAll();
+        repaint();
+
+        loadMenu();
+
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new GridLayout(0, 2, 10, 10));
+
+        for (Menu menu : menuList) {
+            JPanel itemPanel = new JPanel();
+            itemPanel.setLayout(new BorderLayout());
+
+            JLabel imageLabel = new JLabel(menu.getImage());
+            itemPanel.add(imageLabel, BorderLayout.CENTER);
+
+            JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            itemPanel.add(nameLabel, BorderLayout.NORTH);
+
+            JLabel priceLabel = new JLabel("$" + menu.getPrice(), SwingConstants.CENTER);
+            itemPanel.add(priceLabel, BorderLayout.SOUTH);
+
+            itemPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    showMenuPopup(menu);
+                }
+            });
+
+            menuPanel.add(itemPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(menuPanel);
+        add(scrollPane, BorderLayout.CENTER);
+
+        JButton cartButton = new JButton("Go to Cart");
+        cartButton.setFont(new Font("Arial", Font.BOLD, 20));
+        cartButton.addActionListener(e -> showCartPage());
+        add(cartButton, BorderLayout.SOUTH);
+
+        revalidate();
+        repaint();
+    }
+
+    // 메뉴 팝업 창
+    private void showMenuPopup(Menu menu) {
+        JDialog dialog = new JDialog(this, menu.getName(), true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(400, 500);
+
+        JLabel imageLabel = new JLabel(menu.getImage());
+        dialog.add(imageLabel, BorderLayout.NORTH);
+
+        JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
+                + "Price: $" + menu.getPrice() + "\n\n"
+                + "Description: " + menu.getDescription());
+        infoArea.setFont(new Font("Arial", Font.PLAIN, 18));
+        infoArea.setEditable(false);
+        dialog.add(infoArea, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+
+        JButton addButton = new JButton("Add to Cart");
+        addButton.addActionListener(e -> {
+            customer.addMenu(menu);
+            dialog.dispose();
+        });
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        buttonPanel.add(addButton);
+        buttonPanel.add(cancelButton);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+
+    // 장바구니 페이지
+    private void showCartPage() {
+        getContentPane().removeAll();
+        repaint();
+
+        JPanel cartPanel = new JPanel();
+        cartPanel.setLayout(new GridLayout(0, 1));
+
+        for (Menu menu : customer.getOrderList().keySet()) {
+            int quantity = customer.getOrderList().get(menu);
+            JLabel itemLabel = new JLabel(menu.getName() + " x " + quantity);
+            cartPanel.add(itemLabel);
+        }
+
+        add(cartPanel, BorderLayout.CENTER);
+
+        JButton checkoutButton = new JButton("Checkout");
+        checkoutButton.setFont(new Font("Arial", Font.BOLD, 20));
+        checkoutButton.addActionListener(e -> paymentPage());
+        add(checkoutButton, BorderLayout.SOUTH);
+
+        revalidate();
+        repaint();
+    }
+
+    // 결제 페이지
+    private void paymentPage() {
+        getContentPane().removeAll();
+        repaint();
+
+        JLabel titleLabel = new JLabel("Select Payment Method", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        add(titleLabel, BorderLayout.NORTH);
+
+        JButton cashButton = new JButton("Cash");
+        JButton cardButton = new JButton("Card");
+        JButton payButton = new JButton("Pay");
+
+        cashButton.setFont(new Font("Arial", Font.BOLD, 20));
+        cardButton.setFont(new Font("Arial", Font.BOLD, 20));
+        payButton.setFont(new Font("Arial", Font.BOLD, 20));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 3));
+        buttonPanel.add(cashButton);
+        buttonPanel.add(cardButton);
+        buttonPanel.add(payButton);
+        add(buttonPanel, BorderLayout.CENTER);
+
+        cashButton.addActionListener(e -> showPaymentPopup("Cash", "영수증을 가지고 카운터로 이동하세요."));
+        cardButton.addActionListener(e -> showPaymentPopup("Card", "카드를 꽂아주세요."));
+        payButton.addActionListener(e -> showPaymentPopup("Pay", "바코드를 찍어주세요."));
+
+        revalidate();
+        repaint();
+    }
+
+    // 결제 안내 팝업
+    private void showPaymentPopup(String method, String message) {
+        JDialog dialog = new JDialog(this, "Payment", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(400, 200);
+
+        JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        dialog.add(messageLabel, BorderLayout.CENTER);
+
+        int currentOrderNumber = orderNumber.getAndIncrement(); // 스레드로 대기 번호 생성
+        JLabel orderLabel = new JLabel("Order Number: " + currentOrderNumber, SwingConstants.CENTER);
+        orderLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        dialog.add(orderLabel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+
+        // 영수증 출력
+        System.out.println("Order Number: " + currentOrderNumber);
+        System.out.println("Payment Method: " + method);
+        System.out.println("Items Ordered:");
+        for (Menu menu : customer.getOrderList().keySet()) {
+            System.out.println(menu.getName() + " x " + customer.getOrderList().get(menu));
+        }
+        System.out.println("Total: $" + calculateTotal());
+        System.out.println("-------------------------");
+    }
+
+    // 총 금액 계산
+    private double calculateTotal() {
+        double total = 0;
+        for (Menu menu : customer.getOrderList().keySet()) {
+            total += menu.getPrice() * customer.getOrderList().get(menu);
+        }
+        return total;
+    }
+
+    // 메뉴 데이터 불러오기
+    private void loadMenu() {
+        try (FileReader reader = new FileReader("menu.json")) {
+            JSONArray menuArray = new JSONArray(new String(reader.readAllBytes()));
+
+            for (int i = 0; i < menuArray.length(); i++) {
+                String name = menuArray.getJSONObject(i).getString("name");
+                double price = menuArray.getJSONObject(i).getDouble("price");
+                String description = menuArray.getJSONObject(i).getString("description");
+                ImageIcon image = new ImageIcon(menuArray.getJSONObject(i).getString("image"));
+
+                menuList.add(new Menu(name, price, description, image));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
-        // GUI 실행
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SimpleGUI().setVisible(true);
-            }
-        });
+        new SimpleGUI().setVisible(true);
     }
 }

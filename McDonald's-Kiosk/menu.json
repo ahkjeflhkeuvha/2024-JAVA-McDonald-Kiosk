@@ -3,18 +3,21 @@
         "id": 1,
         "name": "Big Mac",
         "price": 4.99,
-        "description": "Delicious beef burger with special sauce."
+        "description": "Delicious beef burger with special sauce.",
+        "image" : ".//imgs//menu.png"
     },
     {
         "id": 2,
         "name": "Fries",
         "price": 1.99,
-        "description": "Crispy golden fries."
+        "description": "Crispy golden fries.",
+        "image" : ".//imgs//menu.png"
     },
     {
         "id": 3,
         "name": "McNuggets",
         "price": 3.99,
-        "description": "Chicken nuggets served with your choice of sauce."
+        "description": "Chicken nuggets served with your choice of sauce.",
+        "image" : ".//imgs//menu.png"
     }
 ]
