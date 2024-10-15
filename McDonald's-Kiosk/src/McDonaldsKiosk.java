@@ -2,6 +2,7 @@ import javax.swing.*;
 import org.json.JSONArray;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -283,8 +284,15 @@ public class McDonaldsKiosk extends JFrame {
 
     // 메뉴 데이터 불러오기
     private void loadMenu() {
-        try (FileReader reader = new FileReader("menu.json")) {
-            JSONArray menuArray = new JSONArray(new String(reader.readAllBytes()));
+        try (BufferedReader reader = new BufferedReader(new FileReader("menu.json"))) {
+            StringBuilder jsonContent = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                jsonContent.append(line);
+            }
+
+            JSONArray menuArray = new JSONArray(jsonContent.toString());
 
             for (int i = 0; i < menuArray.length(); i++) {
                 String name = menuArray.getJSONObject(i).getString("name");
@@ -296,6 +304,8 @@ public class McDonaldsKiosk extends JFrame {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
     }
 
