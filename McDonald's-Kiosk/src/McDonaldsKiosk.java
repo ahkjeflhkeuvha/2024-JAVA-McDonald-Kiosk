@@ -6,12 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class SimpleGUI extends JFrame {
+public class McDonaldsKiosk extends JFrame {
     private ArrayList<Menu> menuList = new ArrayList<>();
     private Customer customer = new Customer(); // 고객 객체 추가
-    private static AtomicInteger orderNumber = new AtomicInteger(1); // 대기 번호 생성
+    private static int orderNumber = 1; // 대기 번호
 
     // 메뉴 클래스 정의
     class Menu {
@@ -67,7 +66,7 @@ public class SimpleGUI extends JFrame {
     }
 
     // 생성자
-    public SimpleGUI() {
+    public McDonaldsKiosk() {
         setTitle("McDonald's Kiosk");
         setSize(462, 820);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -254,15 +253,14 @@ public class SimpleGUI extends JFrame {
         messageLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         dialog.add(messageLabel, BorderLayout.CENTER);
 
-        int currentOrderNumber = orderNumber.getAndIncrement(); // 스레드로 대기 번호 생성
-        JLabel orderLabel = new JLabel("Order Number: " + currentOrderNumber, SwingConstants.CENTER);
+        JLabel orderLabel = new JLabel("Order Number: " + orderNumber, SwingConstants.CENTER);
         orderLabel.setFont(new Font("Arial", Font.BOLD, 24));
         dialog.add(orderLabel, BorderLayout.SOUTH);
 
         dialog.setVisible(true);
 
         // 영수증 출력
-        System.out.println("Order Number: " + currentOrderNumber);
+        System.out.println("Order Number: " + orderNumber);
         System.out.println("Payment Method: " + method);
         System.out.println("Items Ordered:");
         for (Menu menu : customer.getOrderList().keySet()) {
@@ -270,6 +268,8 @@ public class SimpleGUI extends JFrame {
         }
         System.out.println("Total: $" + calculateTotal());
         System.out.println("-------------------------");
+
+        orderNumber++; // 결제 완료 후 대기 번호 증가
     }
 
     // 총 금액 계산
@@ -300,6 +300,6 @@ public class SimpleGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        new SimpleGUI().setVisible(true);
+        new McDonaldsKiosk().setVisible(true);
     }
 }
