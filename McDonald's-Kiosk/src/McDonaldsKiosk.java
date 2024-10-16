@@ -88,15 +88,19 @@ public class McDonaldsKiosk extends JFrame {
 
         JButton toGoButton = new JButton("Take Out");
         JButton eatInButton = new JButton("Eat In");
+        
+        ImageIcon toGoImage = new ImageIcon(".//imgs//togo.png");
 
         toGoButton.setFont(new Font("Arial", Font.BOLD, 20));
+        toGoButton.setIcon(toGoImage);
         eatInButton.setFont(new Font("Arial", Font.BOLD, 20));
+        eatInButton.setIcon(toGoImage);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2, 10, 10));
+        buttonPanel.setLayout(new GridLayout(1, 2, 20, 20));
         buttonPanel.add(toGoButton);
         buttonPanel.add(eatInButton);
-        add(buttonPanel, BorderLayout.CENTER);
+        add(buttonPanel);
 
         // 버튼 클릭 시 메뉴 페이지로 이동
         toGoButton.addActionListener(e -> displayMenuPage());
@@ -124,7 +128,6 @@ public class McDonaldsKiosk extends JFrame {
             itemPanel.add(imageLabel, BorderLayout.CENTER);
 
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
             itemPanel.add(nameLabel, BorderLayout.NORTH);
 
             JLabel priceLabel = new JLabel("$" + menu.getPrice(), SwingConstants.CENTER);
@@ -196,8 +199,10 @@ public class McDonaldsKiosk extends JFrame {
         cartPanel.setLayout(new GridLayout(0, 1));
 
         for (Menu menu : customer.getOrderList().keySet()) {
+        	JLabel image = new JLabel(menu.getImage());
             int quantity = customer.getOrderList().get(menu);
             JLabel itemLabel = new JLabel(menu.getName() + " x " + quantity);
+            cartPanel.add(image);
             cartPanel.add(itemLabel);
         }
 
@@ -246,29 +251,25 @@ public class McDonaldsKiosk extends JFrame {
 
     // 결제 안내 팝업
     private void showPaymentPopup(String method, String message) {
-        JDialog dialog = new JDialog(this, "Payment", true);
-        dialog.setLayout(new BorderLayout());
-        dialog.setSize(400, 200);
-
-        JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        dialog.add(messageLabel, BorderLayout.CENTER);
-
-        JLabel orderLabel = new JLabel("Order Number: " + orderNumber, SwingConstants.CENTER);
-        orderLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        dialog.add(orderLabel, BorderLayout.SOUTH);
-
-        dialog.setVisible(true);
-
+    	getContentPane().removeAll();
+        repaint();
+        
         // 영수증 출력
         System.out.println("Order Number: " + orderNumber);
         System.out.println("Payment Method: " + method);
         System.out.println("Items Ordered:");
+        
+        String receipt = "";
         for (Menu menu : customer.getOrderList().keySet()) {
-            System.out.println(menu.getName() + " x " + customer.getOrderList().get(menu));
+            receipt += menu.getName() + " x " + customer.getOrderList().get(menu);
         }
-        System.out.println("Total: $" + calculateTotal());
-        System.out.println("-------------------------");
+        receipt += "Total: $" + calculateTotal();
+        receipt += "-------------------------";
+        
+        JLabel receiptLabel = new JLabel(receipt, SwingConstants.CENTER);
+        add(receiptLabel);
+        System.out.println(receipt);
+        
 
         orderNumber++; // 결제 완료 후 대기 번호 증가
     }
