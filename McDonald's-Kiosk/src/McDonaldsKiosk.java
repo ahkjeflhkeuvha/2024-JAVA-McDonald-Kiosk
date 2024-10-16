@@ -262,6 +262,7 @@ public class McDonaldsKiosk extends JFrame {
         String receipt = "";
         for (Menu menu : customer.getOrderList().keySet()) {
             receipt += menu.getName() + " x " + customer.getOrderList().get(menu);
+            System.out.println(menu.getName() + " x " + customer.getOrderList().get(menu));
         }
         receipt += "Total: $" + calculateTotal();
         receipt += "-------------------------";
