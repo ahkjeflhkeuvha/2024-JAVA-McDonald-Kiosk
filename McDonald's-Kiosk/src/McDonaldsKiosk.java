@@ -1,8 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import org.json.JSONArray;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -118,12 +121,27 @@ public class McDonaldsKiosk extends JFrame {
         loadMenu();
 
         JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(0, 1, 10, 10));
+        menuPanel.setLayout(new GridLayout(0, 1, 100, 30));
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));
 
         for (Menu menu : menuList) {
-            JPanel itemPanel = new JPanel();
+        	BufferedImage img = null;
+        	Image resizedImage = null;
+        	ImageIcon imageIcon = null;
+        	try {
+        		img = ImageIO.read(new File(".//imgs//Rectangle.png"));
+                resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(resizedImage);
+        	} catch(Exception e) {
+        		e.printStackTrace();
+        	}
+            JLabel backgroundJ = new JLabel();
+            backgroundJ.setIcon(imageIcon);
+            JPanel itemPanel = new JPanel(); 
+            
             itemPanel.setLayout(new BorderLayout());
             itemPanel.setBackground(Color.white);
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));
 
             
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
