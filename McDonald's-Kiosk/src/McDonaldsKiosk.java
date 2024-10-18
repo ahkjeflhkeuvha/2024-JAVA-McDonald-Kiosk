@@ -123,15 +123,19 @@ public class McDonaldsKiosk extends JFrame {
         for (Menu menu : menuList) {
             JPanel itemPanel = new JPanel();
             itemPanel.setLayout(new BorderLayout());
+            itemPanel.setBackground(Color.white);
 
-            JLabel imageLabel = new JLabel(menu.getImage());
-            itemPanel.add(imageLabel, BorderLayout.CENTER);
-
+            
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
             itemPanel.add(nameLabel, BorderLayout.NORTH);
 
             JLabel priceLabel = new JLabel("$" + menu.getPrice(), SwingConstants.CENTER);
+            priceLabel.setFont(new Font("Arial", Font.BOLD, 14));
             itemPanel.add(priceLabel, BorderLayout.SOUTH);
+            
+            JLabel imageLabel = new JLabel(menu.getImage());
+            itemPanel.add(imageLabel, BorderLayout.CENTER);
 
             itemPanel.addMouseListener(new MouseAdapter() {
                 @Override
