@@ -97,7 +97,7 @@ public class McDonaldsKiosk extends JFrame {
         eatInButton.setIcon(toGoImage);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2, 20, 20));
+        
         buttonPanel.add(toGoButton);
         buttonPanel.add(eatInButton);
         add(buttonPanel);
@@ -118,7 +118,7 @@ public class McDonaldsKiosk extends JFrame {
         loadMenu();
 
         JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(0, 2, 10, 10));
+        menuPanel.setLayout(new GridLayout(0, 1, 10, 10));
 
         for (Menu menu : menuList) {
             JPanel itemPanel = new JPanel();
@@ -254,27 +254,49 @@ public class McDonaldsKiosk extends JFrame {
     	getContentPane().removeAll();
         repaint();
         
+        
+        String receipt = "";
+        
         // 영수증 출력
         System.out.println("Order Number: " + orderNumber);
         System.out.println("Payment Method: " + method);
         System.out.println("Items Ordered:");
         
-        String receipt = "";
+        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:\n";
+        
         for (Menu menu : customer.getOrderList().keySet()) {
-            receipt += menu.getName() + " x " + customer.getOrderList().get(menu);
+            receipt += menu.getName() + " x " + customer.getOrderList().get(menu) + "<br>";
             System.out.println(menu.getName() + " x " + customer.getOrderList().get(menu));
         }
-        receipt += "Total: $" + calculateTotal();
-        receipt += "-------------------------";
         
-        JLabel receiptLabel = new JLabel(receipt, SwingConstants.CENTER);
-        add(receiptLabel);
-        System.out.println(receipt);
+        System.out.println("Total: $" + calculateTotal());
+        System.out.println("-------------------------");
+        receipt += "<br>Total: $" + calculateTotal();
+        receipt += "<br>-------------------------</html>";
         
-
         orderNumber++; // 결제 완료 후 대기 번호 증가
+        
+        try {
+        	Thread.sleep(2000);
+        	totalPage(receipt);
+        } catch(InterruptedException e) {
+        	e.printStackTrace();
+        }
     }
 
+    private void totalPage(String receipt) {
+    	getContentPane().removeAll();
+        repaint();
+        
+        JLabel titleLabel = new JLabel(receipt, SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        titleLabel.setBounds(100, 100, 400, 500);
+        add(titleLabel);
+        
+        revalidate();
+        repaint();
+    }
+    
     // 총 금액 계산
     private double calculateTotal() {
         double total = 0;
