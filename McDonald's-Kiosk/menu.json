@@ -1,23 +1,55 @@
 	[
     {
         "id": 1,
-        "name": "Big Mac",
+        "name": "Hamburger",
         "price": 4.99,
         "description": "Delicious beef burger with special sauce.",
-        "image" : ".//imgs//menu.png"
+        "image" : ".//imgs//Hamburger.png"
     },
     {
         "id": 2,
-        "name": "Fries",
+        "name": "French Fries",
         "price": 1.99,
         "description": "Crispy golden fries.",
-        "image" : ".//imgs//menu.png"
+        "image" : ".//imgs//French Fries.png"
     },
     {
         "id": 3,
-        "name": "McNuggets",
+        "name": "Fried Shrimp",
         "price": 3.99,
         "description": "Chicken nuggets served with your choice of sauce.",
-        "image" : ".//imgs//menu.png"
+        "image" : ".//imgs//Fried Shrimp.png"
+    }
+    ,
+    {
+        "id": 4,
+        "name": "Beer",
+        "price": 3.99,
+        "description": "Chicken nuggets served with your choice of sauce.",
+        "image" : ".//imgs//Clinking Beer Mugs.png"
+    }
+    ,
+    {
+        "id": 5,
+        "name": "Green Salad",
+        "price": 3.99,
+        "description": "Chicken nuggets served with your choice of sauce.",
+        "image" : ".//imgs//Green Salad.png"
+    }
+    ,
+    {
+        "id": 6,
+        "name": "Hot Dog",
+        "price": 3.99,
+        "description": "Chicken nuggets served with your choice of sauce.",
+        "image" : ".//imgs//Hot Dog.png"
+    }
+    ,
+    {
+        "id": 7,
+        "name": "Tropical Drink",
+        "price": 3.99,
+        "description": "Chicken nuggets served with your choice of sauce.",
+        "image" : ".//imgs//Tropical Drink.png"
     }
 ]
