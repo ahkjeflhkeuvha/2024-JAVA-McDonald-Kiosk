@@ -8,6 +8,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class McDonaldsKiosk extends JFrame {
     private ArrayList<Menu> menuList = new ArrayList<>();
@@ -67,6 +69,10 @@ public class McDonaldsKiosk extends JFrame {
         HashMap<Menu, Integer> getOrderList() {
             return orderList;
         }
+        
+        void removeAllMenu(HashMap orderList) {
+        	orderList.clear();
+        }
     }
     
     class Order {
@@ -109,13 +115,6 @@ public class McDonaldsKiosk extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                printSalesReport();
-            }
-        });
-
         howToEatPage();
     }
     // <먹고가기>, <포장하기> 옵션 선택 페이지
@@ -150,43 +149,11 @@ public class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
-    
-    private void showPaymentPopup(String method, String message) {
-        getContentPane().removeAll();
-        repaint();
-
-        String receipt = "";
-        double totalAmount = 0;
-
-        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:<br>";
-        for (Menu menu : customer.getOrderList().keySet()) {
-            int quantity = customer.getOrderList().get(menu);
-            receipt += menu.getName() + " x " + quantity + "<br>";
-            totalAmount += menu.getPrice() * quantity;
-        }
-
-        receipt += "Total Amount: $" + String.format("%.2f", totalAmount) + "</html>";
-
-        JLabel receiptLabel = new JLabel(receipt);
-        receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
-        add(receiptLabel, BorderLayout.CENTER);
-
-        saveOrderToFile(method, totalAmount);
-        allOrders.add(new Order(customer.getOrderList(), totalAmount, orderNumber));
-
-        orderNumber++;
-
-        JButton returnButton = new JButton("Return to Main");
-        returnButton.setFont(new Font("Arial", Font.BOLD, 20));
-        returnButton.addActionListener(e -> howToEatPage());
-        add(returnButton, BorderLayout.SOUTH);
-
-        revalidate();
-        repaint();
-    }
 
     private void saveOrderToFile(String method, double totalAmount) {
-        try (FileWriter writer = new FileWriter("orderlist.txt", true)) {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter("orderedList.txt", true); // Append mode
             writer.write("Order Number: " + orderNumber + "\n");
             writer.write("Payment Method: " + method + "\n");
             writer.write("Items Ordered:\n");
@@ -194,10 +161,17 @@ public class McDonaldsKiosk extends JFrame {
                 int quantity = customer.getOrderList().get(menu);
                 writer.write(menu.getName() + " x " + quantity + "\n");
             }
-            writer.write("Total Amount: $" + String.format("%.2f", totalAmount) + "\n\n");
-            writer.close();
+            writer.write("\n");
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -381,7 +355,6 @@ public class McDonaldsKiosk extends JFrame {
     // 결제 안내 팝업
     private void showPaymentPopup(String method, String message) {
         getContentPane().removeAll();
-        repaint();
 
         String receipt = "";
 
@@ -403,13 +376,12 @@ public class McDonaldsKiosk extends JFrame {
         receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         add(receiptLabel, BorderLayout.CENTER);
 
-        orderNumber++;
-
         // 주문 내용을 파일로 저장
+     // 주문 내용을 파일로 저장
         FileWriter writer = null;
         try {
-        	writer = new FileWriter(".//orderlist.txt");
-            writer.write("Order Number: " + orderNumber + "\n");
+            writer = new FileWriter(".//orderList.txt");
+            writer.write("Order Number: " + orderNumber + "\n");  // 이 시점에서 orderNumber 저장
             writer.write("Payment Method: " + method + "\n");
             writer.write("Items Ordered:\n");
             for (Menu menu : customer.getOrderList().keySet()) {
@@ -421,13 +393,54 @@ public class McDonaldsKiosk extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        orderNumber++;  // 파일 저장 이후에 orderNumber 증가
+
         
 
-        JButton returnButton = new JButton("End");
+        JButton returnButton = new JButton("Return to Main");
         returnButton.setFont(new Font("Arial", Font.BOLD, 20));
-        returnButton.addActionListener(e -> howToEatPage());
+        returnButton.addActionListener(e -> {
+        	orderEnd();
+        });
         add(returnButton, BorderLayout.SOUTH);
 
+        revalidate();
+        repaint();
+    }
+        
+    
+    private void orderEnd() {
+        getContentPane().removeAll();
+        
+        HashMap<Menu, Integer> currentOrderList = customer.getOrderList();
+        
+        double totalAmount = 0;
+        for (Menu menu : currentOrderList.keySet()) {
+            totalAmount += menu.getPrice() * currentOrderList.get(menu);
+        }
+        
+        Order newOrder = new Order(currentOrderList, totalAmount, orderNumber);
+        allOrders.add(newOrder);
+        
+    	customer.removeAllMenu(customer.getOrderList());
+    	
+    	
+    	JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+    	JButton closeButton = new JButton("종료하기");
+    	JButton mainButton = new JButton("메인 메뉴로 이동하기");
+    	
+    	buttonPanel.add(closeButton);
+    	buttonPanel.add(mainButton);
+    	
+    	closeButton.addActionListener(e -> {
+    		printSalesReport();
+    		System.exit(0);
+    	});
+    	mainButton.addActionListener(e -> howToEatPage());
+    	
+    	add(buttonPanel);
+    	
         revalidate();
         repaint();
     }
