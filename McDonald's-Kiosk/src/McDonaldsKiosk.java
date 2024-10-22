@@ -4,17 +4,17 @@ import org.json.JSONArray;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class McDonaldsKiosk extends JFrame {
     private ArrayList<Menu> menuList = new ArrayList<>();
-    private Customer customer = new Customer(); // 고객 객체 추가
-    private static int orderNumber = 1; // 대기 번호
+    private Customer customer = new Customer();
+    private static int orderNumber = 1;
+    private List<Order> allOrders = new ArrayList<>();
+
 
     // 메뉴 클래스 정의
     class Menu {
@@ -68,6 +68,39 @@ public class McDonaldsKiosk extends JFrame {
             return orderList;
         }
     }
+    
+    class Order {
+        private HashMap<Menu, Integer> items;
+        private double totalAmount; // 주문 금액 저장
+        private int orderNumber;
+
+        Order(HashMap<Menu, Integer> items, double totalAmount, int orderNumber) {
+            this.items = new HashMap<>(items); // 주문 내역 복사
+            this.totalAmount = totalAmount; // 총 금액 저장
+            this.orderNumber = orderNumber;
+        }
+
+        public HashMap<Menu, Integer> getItems() {
+            return items;
+        }
+
+        public double getTotalAmount() {
+            return totalAmount;
+        }
+
+        public int getOrderNumber() {
+            return orderNumber;
+        }
+    }
+
+
+    private double calculateTotalRevenue() {
+        double totalRevenue = 0;
+        for (Order order : allOrders) {
+            totalRevenue += order.getTotalAmount();
+        }
+        return totalRevenue;
+    }
 
     // 생성자
     public McDonaldsKiosk() {
@@ -76,10 +109,15 @@ public class McDonaldsKiosk extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // 처음에 <먹고가기>, <포장하기> 옵션 선택 페이지 표시
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                printSalesReport();
+            }
+        });
+
         howToEatPage();
     }
-
     // <먹고가기>, <포장하기> 옵션 선택 페이지
     private void howToEatPage() {
         getContentPane().removeAll();
@@ -111,6 +149,75 @@ public class McDonaldsKiosk extends JFrame {
 
         revalidate();
         repaint();
+    }
+    
+    private void showPaymentPopup(String method, String message) {
+        getContentPane().removeAll();
+        repaint();
+
+        String receipt = "";
+        double totalAmount = 0;
+
+        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:<br>";
+        for (Menu menu : customer.getOrderList().keySet()) {
+            int quantity = customer.getOrderList().get(menu);
+            receipt += menu.getName() + " x " + quantity + "<br>";
+            totalAmount += menu.getPrice() * quantity;
+        }
+
+        receipt += "Total Amount: $" + String.format("%.2f", totalAmount) + "</html>";
+
+        JLabel receiptLabel = new JLabel(receipt);
+        receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        add(receiptLabel, BorderLayout.CENTER);
+
+        saveOrderToFile(method, totalAmount);
+        allOrders.add(new Order(customer.getOrderList(), totalAmount, orderNumber));
+
+        orderNumber++;
+
+        JButton returnButton = new JButton("Return to Main");
+        returnButton.setFont(new Font("Arial", Font.BOLD, 20));
+        returnButton.addActionListener(e -> howToEatPage());
+        add(returnButton, BorderLayout.SOUTH);
+
+        revalidate();
+        repaint();
+    }
+
+    private void saveOrderToFile(String method, double totalAmount) {
+        try (FileWriter writer = new FileWriter("orderlist.txt", true)) {
+            writer.write("Order Number: " + orderNumber + "\n");
+            writer.write("Payment Method: " + method + "\n");
+            writer.write("Items Ordered:\n");
+            for (Menu menu : customer.getOrderList().keySet()) {
+                int quantity = customer.getOrderList().get(menu);
+                writer.write(menu.getName() + " x " + quantity + "\n");
+            }
+            writer.write("Total Amount: $" + String.format("%.2f", totalAmount) + "\n\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void printSalesReport() {
+        System.out.println("=== Sales Report ===");
+        HashMap<String, Integer> menuSales = new HashMap<>();
+        double totalRevenue = 0;
+
+        for (Order order : allOrders) {
+            for (Menu menu : order.getItems().keySet()) {
+                int quantity = order.getItems().get(menu);
+                menuSales.put(menu.getName(), menuSales.getOrDefault(menu.getName(), 0) + quantity);
+            }
+            totalRevenue += order.getTotalAmount();
+        }
+
+        for (String menuName : menuSales.keySet()) {
+            System.out.println(menuName + ": " + menuSales.get(menuName));
+        }
+        System.out.println("Total Revenue: $" + String.format("%.2f", totalRevenue));
     }
 
     // 메뉴 페이지
@@ -273,62 +380,58 @@ public class McDonaldsKiosk extends JFrame {
 
     // 결제 안내 팝업
     private void showPaymentPopup(String method, String message) {
-    	getContentPane().removeAll();
+        getContentPane().removeAll();
         repaint();
-        
-        
+
         String receipt = "";
-        
+
         // 영수증 출력
         System.out.println("Order Number: " + orderNumber);
         System.out.println("Payment Method: " + method);
         System.out.println("Items Ordered:");
-        
-        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:\n";
-        
-        for (Menu menu : customer.getOrderList().keySet()) {
-            receipt += menu.getName() + " x " + customer.getOrderList().get(menu) + "<br>";
-            System.out.println(menu.getName() + " x " + customer.getOrderList().get(menu));
-        }
-        
-        System.out.println("Total: $" + calculateTotal());
-        System.out.println("-------------------------");
-        receipt += "<br>Total: $" + calculateTotal();
-        receipt += "<br>-------------------------</html>";
-        
-        orderNumber++; // 결제 완료 후 대기 번호 증가
-        
-        try {
-        	Thread.sleep(2000);
-        	totalPage(receipt);
-        } catch(InterruptedException e) {
-        	e.printStackTrace();
-        }
-    }
 
-    private void totalPage(String receipt) {
-    	getContentPane().removeAll();
-        repaint();
+        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:<br>";
+        for (Menu menu : customer.getOrderList().keySet()) {
+            int quantity = customer.getOrderList().get(menu);
+            receipt += menu.getName() + " x " + quantity + "<br>";
+            System.out.println(menu.getName() + " x " + quantity);
+        }
+
+        receipt += "</html>";
+
+        JLabel receiptLabel = new JLabel(receipt);
+        receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
+        add(receiptLabel, BorderLayout.CENTER);
+
+        orderNumber++;
+
+        // 주문 내용을 파일로 저장
+        FileWriter writer = null;
+        try {
+        	writer = new FileWriter(".//orderlist.txt");
+            writer.write("Order Number: " + orderNumber + "\n");
+            writer.write("Payment Method: " + method + "\n");
+            writer.write("Items Ordered:\n");
+            for (Menu menu : customer.getOrderList().keySet()) {
+                int quantity = customer.getOrderList().get(menu);
+                writer.write(menu.getName() + " x " + quantity + "\n");
+            }
+            writer.write("\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
-        JLabel titleLabel = new JLabel(receipt, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        titleLabel.setBounds(100, 100, 400, 500);
-        add(titleLabel);
-        
+
+        JButton returnButton = new JButton("End");
+        returnButton.setFont(new Font("Arial", Font.BOLD, 20));
+        returnButton.addActionListener(e -> howToEatPage());
+        add(returnButton, BorderLayout.SOUTH);
+
         revalidate();
         repaint();
     }
-    
-    // 총 금액 계산
-    private double calculateTotal() {
-        double total = 0;
-        for (Menu menu : customer.getOrderList().keySet()) {
-            total += menu.getPrice() * customer.getOrderList().get(menu);
-        }
-        return total;
-    }
 
-    // 메뉴 데이터 불러오기
     private void loadMenu() {
         try (BufferedReader reader = new BufferedReader(new FileReader("menu.json"))) {
             StringBuilder jsonContent = new StringBuilder();
