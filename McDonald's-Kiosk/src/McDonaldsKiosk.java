@@ -122,25 +122,48 @@ public class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
 
+        // 로고 이미지 추가
+        BufferedImage img = null;
+    	Image resizedImage = null;
+    	ImageIcon imageIcon = null;
+    	try {
+    		img = ImageIO.read(new File(".//imgs//logo.png"));
+            resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(resizedImage);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(imageIcon);
+
+        // 타이틀 추가
         JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        add(titleLabel, BorderLayout.NORTH);
 
+        // 로고와 타이틀 레이아웃 설정
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(imageLabel, BorderLayout.CENTER);
+        topPanel.add(titleLabel, BorderLayout.SOUTH);
+        add(topPanel, BorderLayout.NORTH);
+
+        // 버튼 설정
         JButton toGoButton = new JButton("Take Out");
         JButton eatInButton = new JButton("Eat In");
-        
-        ImageIcon toGoImage = new ImageIcon(".//imgs//togo.png");
 
+        ImageIcon toGoImage = new ImageIcon(".//imgs//togo.png");
         toGoButton.setFont(new Font("Arial", Font.BOLD, 20));
         toGoButton.setIcon(toGoImage);
         eatInButton.setFont(new Font("Arial", Font.BOLD, 20));
         eatInButton.setIcon(toGoImage);
-
-        JPanel buttonPanel = new JPanel();
         
+        // 버튼을 가로로 배치
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(0, 2, 0, 0)); // 가로 배치 및 간격 조절
         buttonPanel.add(toGoButton);
         buttonPanel.add(eatInButton);
-        add(buttonPanel);
+        add(buttonPanel, BorderLayout.CENTER);
 
         // 버튼 클릭 시 메뉴 페이지로 이동
         toGoButton.addActionListener(e -> displayMenuPage());
@@ -149,6 +172,7 @@ public class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
     private void saveOrderToFile(String method, double totalAmount) {
         FileWriter writer = null;
@@ -298,19 +322,22 @@ public class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
 
+        // 스크롤 가능하도록 JScrollPane 사용
         JPanel cartPanel = new JPanel();
         cartPanel.setLayout(new GridLayout(0, 1));
 
         for (Menu menu : customer.getOrderList().keySet()) {
-        	JLabel image = new JLabel(menu.getImage());
+            JLabel image = new JLabel(menu.getImage());
             int quantity = customer.getOrderList().get(menu);
             JLabel itemLabel = new JLabel(menu.getName() + " x " + quantity);
             cartPanel.add(image);
             cartPanel.add(itemLabel);
         }
 
-        add(cartPanel, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(cartPanel);
+        add(scrollPane, BorderLayout.CENTER); // 스크롤 가능한 패널 추가
 
+        // 결제 버튼 추가
         JButton checkoutButton = new JButton("Checkout");
         checkoutButton.setFont(new Font("Arial", Font.BOLD, 20));
         checkoutButton.addActionListener(e -> paymentPage());
@@ -319,6 +346,7 @@ public class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
     // 결제 페이지
     private void paymentPage() {
