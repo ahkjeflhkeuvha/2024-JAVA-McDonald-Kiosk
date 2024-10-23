@@ -341,10 +341,7 @@ public class McDonaldsKiosk extends JFrame {
             itemPanel.add(nameLabel);
 
             // 메뉴 이미지
-            JLabel imageLabel = new JLabel();
-            ImageIcon icon = new ImageIcon(menu.getImage()); // 메뉴 이미지 가져오기
-            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // 이미지 크기 조정
-            imageLabel.setIcon(new ImageIcon(img));
+            JLabel imageLabel = new JLabel(menu.getImage());
             imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
             itemPanel.add(imageLabel); // 이미지 추가
 
