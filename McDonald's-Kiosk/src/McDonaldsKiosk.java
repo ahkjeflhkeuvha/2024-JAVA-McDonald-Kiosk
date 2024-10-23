@@ -173,7 +173,6 @@ public class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-
     private void saveOrderToFile(String method, double totalAmount) {
         FileWriter writer = null;
         try {
@@ -322,20 +321,47 @@ public class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
 
-        // 스크롤 가능하도록 JScrollPane 사용
+        // 스크롤 가능하도록 JPanel과 JScrollPane 사용
         JPanel cartPanel = new JPanel();
-        cartPanel.setLayout(new GridLayout(0, 1));
+        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS)); // 아이템을 세로로 나열
+        cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));
 
         for (Menu menu : customer.getOrderList().keySet()) {
-            JLabel image = new JLabel(menu.getImage());
+            
+            JPanel itemPanel = new JPanel(); // 각 아이템을 위한 패널 생성
+            itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS)); // 세로로 정렬
+            itemPanel.setBackground(Color.white); // 개별 아이템 배경 설정
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(10, 10 , 10 , 10)); // 내부 여백 추가
+            itemPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
+
+            // 메뉴 이름
+            JLabel nameLabel = new JLabel(menu.getName());
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
+            itemPanel.add(nameLabel);
+
+            // 메뉴 이미지
+            JLabel imageLabel = new JLabel();
+            ImageIcon icon = new ImageIcon(menu.getImage()); // 메뉴 이미지 가져오기
+            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // 이미지 크기 조정
+            imageLabel.setIcon(new ImageIcon(img));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
+            itemPanel.add(imageLabel); // 이미지 추가
+
+            // 메뉴 수량
             int quantity = customer.getOrderList().get(menu);
-            JLabel itemLabel = new JLabel(menu.getName() + " x " + quantity);
-            cartPanel.add(image);
-            cartPanel.add(itemLabel);
+            JLabel quantityLabel = new JLabel("Quantity: " + quantity);
+            quantityLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+            quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
+            itemPanel.add(quantityLabel);
+
+            // 개별 아이템 패널을 cartPanel에 추가
+            cartPanel.add(itemPanel);
         }
 
-        JScrollPane scrollPane = new JScrollPane(cartPanel);
-        add(scrollPane, BorderLayout.CENTER); // 스크롤 가능한 패널 추가
+        // 스크롤 가능한 패널 추가
+        JScrollPane scrollPane = new JScrollPane(cartPanel); 
+        add(scrollPane, BorderLayout.CENTER); 
 
         // 결제 버튼 추가
         JButton checkoutButton = new JButton("Checkout");
@@ -346,6 +372,7 @@ public class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
 
     // 결제 페이지

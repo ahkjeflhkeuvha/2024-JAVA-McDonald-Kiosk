@@ -1,0 +1,35 @@
+Order Number: 3
+Payment Method: Pay
+Items Ordered:
+Tropical Drink x 1
+Hamburger x 1
+French Fries x 2
+
+Order Number: 1
+Payment Method: Card
+Items Ordered:
+Hamburger x 1
+French Fries x 1
+
+Order Number: 1
+Payment Method: Pay
+Items Ordered:
+Hamburger x 1
+French Fries x 1
+
+Order Number: 1
+Payment Method: Cash
+Items Ordered:
+Hamburger x 1
+
+Order Number: 1
+Payment Method: Card
+Items Ordered:
+Hamburger x 1
+
+Order Number: 2
+Payment Method: Pay
+Items Ordered:
+Hamburger x 1
+French Fries x 1
+
