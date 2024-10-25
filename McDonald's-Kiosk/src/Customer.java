@@ -20,7 +20,7 @@ public class Customer {
         return orderList;
     }
     
-    void removeAllMenu(HashMap orderList) {
-    	orderList.clear();
+    void removeAllMenu() {
+        orderList.clear();
     }
 }

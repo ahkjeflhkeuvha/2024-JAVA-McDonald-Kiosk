@@ -1,5 +1,6 @@
-Order Number: 3
-Payment Method: Pay
+Order Number: 1
+Payment Method: Cash
 Items Ordered:
-Tropical Drink x 1
+Hamburger x 1
+French Fries x 1
 

@@ -11,95 +11,14 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class McDonaldsKiosk extends JFrame {
+class McDonaldsKiosk extends JFrame {
     private ArrayList<Menu> menuList = new ArrayList<>();
     private Customer customer = new Customer();
     private static int orderNumber = 1;
     private List<Order> allOrders = new ArrayList<>();
-
-
-    // 메뉴 클래스 정의
-    class Menu {
-        private String name;
-        private double price;
-        private String description;
-        private ImageIcon image;
-
-        Menu(String name, double price, String description, ImageIcon image) {
-            this.name = name;
-            this.price = price;
-            this.description = description;
-            this.image = image;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public ImageIcon getImage() {
-            return image;
-        }
-    }
-
-    // 고객 클래스 정의
-    class Customer {
-        private HashMap<Menu, Integer> orderList = new HashMap<>();
-
-        void addMenu(Menu menu) {
-            orderList.put(menu, orderList.getOrDefault(menu, 0) + 1);
-        }
-
-        void removeMenu(Menu menu) {
-            if (orderList.containsKey(menu)) {
-                orderList.put(menu, orderList.get(menu) - 1);
-                if (orderList.get(menu) == 0) {
-                    orderList.remove(menu);
-                }
-            }
-        }
-
-        HashMap<Menu, Integer> getOrderList() {
-            return orderList;
-        }
-        
-        void removeAllMenu(HashMap orderList) {
-        	orderList.clear();
-        }
-    }
+    private HashMap<Menu, Integer> orderList = new HashMap<>(); // 주문 목록 초기화
     
-    class Order {
-        private HashMap<Menu, Integer> items;
-        private double totalAmount; // 주문 금액 저장
-        private int orderNumber;
-
-        Order(HashMap<Menu, Integer> items, double totalAmount, int orderNumber) {
-            this.items = new HashMap<>(items); // 주문 내역 복사
-            this.totalAmount = totalAmount; // 총 금액 저장
-            this.orderNumber = orderNumber;
-        }
-
-        public HashMap<Menu, Integer> getItems() {
-            return items;
-        }
-
-        public double getTotalAmount() {
-            return totalAmount;
-        }
-
-        public int getOrderNumber() {
-            return orderNumber;
-        }
-    }
-
-
+ 
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
         for (Order order : allOrders) {
@@ -128,7 +47,7 @@ public class McDonaldsKiosk extends JFrame {
     	ImageIcon imageIcon = null;
     	try {
     		img = ImageIO.read(new File(".//imgs//logo.png"));
-            resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            resizedImage = img.getScaledInstance(100, 100, SwingConstants.CENTER);
             imageIcon = new ImageIcon(resizedImage);
     	} catch(Exception e) {
     		e.printStackTrace();
@@ -174,27 +93,18 @@ public class McDonaldsKiosk extends JFrame {
     }
 
     private void saveOrderToFile(String method, double totalAmount) {
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter("orderedList.txt", true); // Append mode
-            writer.write("Order Number: " + orderNumber + "\n");
-            writer.write("Payment Method: " + method + "\n");
-            writer.write("Items Ordered:\n");
+        orderNumber++; // 주문 번호 증가 (파일 저장 전)
+        try (FileWriter writer = new FileWriter("orderedList.txt", true)) {
+            writer.write("주문 번호: " + orderNumber + "\n");
+            writer.write("결제 방법: " + method + "\n");
+            writer.write("주문 내역:\n");
             for (Menu menu : customer.getOrderList().keySet()) {
                 int quantity = customer.getOrderList().get(menu);
                 writer.write(menu.getName() + " x " + quantity + "\n");
             }
             writer.write("\n");
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            System.err.println("파일 저장 실패: " + e.getMessage());
         }
     }
 
@@ -370,7 +280,7 @@ public class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-
+    
 
     // 결제 페이지
     private void paymentPage() {
@@ -431,7 +341,11 @@ public class McDonaldsKiosk extends JFrame {
         // 주문 내용을 파일로 저장
      // 주문 내용을 파일로 저장
         FileWriter writer = null;
+        FileReader reader = null;
+        int c;
+        
         try {
+        	
             writer = new FileWriter(".//orderList.txt");
             writer.write("Order Number: " + orderNumber + "\n");  // 이 시점에서 orderNumber 저장
             writer.write("Payment Method: " + method + "\n");
@@ -481,21 +395,78 @@ public class McDonaldsKiosk extends JFrame {
     	JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
     	JButton closeButton = new JButton("종료하기");
     	JButton mainButton = new JButton("메인 메뉴로 이동하기");
+    	JButton loginButton = new JButton("사장님 로그인");
     	
     	buttonPanel.add(closeButton);
     	buttonPanel.add(mainButton);
+    	buttonPanel.add(loginButton);
     	
     	closeButton.addActionListener(e -> {
     		printSalesReport();
     		System.exit(0);
     	});
     	mainButton.addActionListener(e -> howToEatPage());
+    	loginButton.addActionListener(e -> showLoginPage());
     	
     	add(buttonPanel);
     	
         revalidate();
         repaint();
     }
+    
+    public static void showLoginPage() {
+        JFrame loginFrame = new JFrame("비밀번호 입력");
+        loginFrame.setSize(400, 200);
+        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginFrame.setLayout(new BorderLayout());
+
+        JPanel loginPanel = new JPanel();
+        loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
+        loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel passwordLabel = new JLabel("비밀번호를 입력하세요:");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginPanel.add(passwordLabel);
+
+        JPasswordField passwordField = new JPasswordField(20);
+        passwordField.setMaximumSize(new Dimension(200, 30));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginPanel.add(passwordField);
+
+        JButton loginButton = new JButton("로그인");
+        loginButton.setFont(new Font("Arial", Font.BOLD, 18));
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginPanel.add(loginButton);
+
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String enteredPassword = new String(passwordField.getPassword());
+                String correctPassword = "1234";  // 사장님 비밀번호
+
+                if (enteredPassword.equals(correctPassword)) {
+                    loginFrame.dispose();  // 로그인 창 닫기
+                    showManagerPage();  // 사장님 페이지 열기
+                } else {
+                    JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다.");
+                }
+            }
+        });
+
+        loginFrame.add(loginPanel, BorderLayout.CENTER);
+        loginFrame.setVisible(true);
+       
+    }
+    
+    private void showManagerPage() {
+        // orderList를 사용하여 매출 정보 표시
+        // 예시:
+        for (Menu menu : orderList.keySet()) {
+            int quantity = orderList.get(menu);
+            System.out.println(menu.getName() + ": " + quantity + "개 판매");
+        }
+    }
+
 
     private void loadMenu() {
         try (BufferedReader reader = new BufferedReader(new FileReader("menu.json"))) {
