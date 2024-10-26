@@ -15,7 +15,7 @@ public class Customer {
             }
         }
     }
-
+    
     HashMap<Menu, Integer> getOrderList() {
         return orderList;
     }

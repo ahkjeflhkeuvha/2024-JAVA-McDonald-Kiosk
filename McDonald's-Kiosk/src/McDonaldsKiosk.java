@@ -7,7 +7,9 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,13 +17,23 @@ class McDonaldsKiosk extends JFrame {
     public ArrayList<Menu> menuList = new ArrayList<>();
     public Customer customer = new Customer();
     public static int orderNumber = 1;
-    public List<Order> allOrders = new ArrayList<>();
+    public List<Customer> allOrders = new ArrayList<>();
  
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
-        for (Order order : allOrders) {
-            totalRevenue += order.getTotalAmount();
+        for(Customer order : allOrders) {
+        	Set<Menu> keys = order.getOrderList().keySet();
+        	Iterator<Menu> it = keys.iterator();
+        	
+        	while(it.hasNext()) {
+        		Menu m = it.next();
+        		double price = m.getPrice();
+        		int num = order.getOrderList().get(m);
+        		totalRevenue += num * price;
+        	}
+        	
         }
+
         return totalRevenue;
     }
 
@@ -89,42 +101,7 @@ class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
-
-    private void saveOrderToFile(String method, double totalAmount) {
-        orderNumber++; // 주문 번호 증가 (파일 저장 전)
-        try (FileWriter writer = new FileWriter("orderedList.txt", true)) {
-            writer.write("주문 번호: " + orderNumber + "\n");
-            writer.write("결제 방법: " + method + "\n");
-            writer.write("주문 내역:\n");
-            for (Menu menu : customer.getOrderList().keySet()) {
-                int quantity = customer.getOrderList().get(menu);
-                writer.write(menu.getName() + " x " + quantity + "\n");
-            }
-            writer.write("\n");
-        } catch (IOException e) {
-            System.err.println("파일 저장 실패: " + e.getMessage());
-        }
-    }
-
-    private void printSalesReport() {
-        System.out.println("=== Sales Report ===");
-        HashMap<String, Integer> menuSales = new HashMap<>();
-        double totalRevenue = 0;
-
-        for (Order order : allOrders) {
-            for (Menu menu : order.getItems().keySet()) {
-                int quantity = order.getItems().get(menu);
-                menuSales.put(menu.getName(), menuSales.getOrDefault(menu.getName(), 0) + quantity);
-            }
-            totalRevenue += order.getTotalAmount();
-        }
-
-        for (String menuName : menuSales.keySet()) {
-            System.out.println(menuName + ": " + menuSales.get(menuName));
-        }
-        System.out.println("Total Revenue: $" + String.format("%.2f", totalRevenue));
-    }
-
+    
     // 메뉴 페이지
     private void displayMenuPage() {
         getContentPane().removeAll();
@@ -312,6 +289,10 @@ class McDonaldsKiosk extends JFrame {
 
     private void showPaymentPopup(String method, String message) {
         getContentPane().removeAll();
+        
+        double price = 0.0;
+        int num = 0;
+        double tot = 0.0;
 
         String receipt = "";
 
@@ -324,9 +305,14 @@ class McDonaldsKiosk extends JFrame {
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += menu.getName() + " x " + quantity + "<br>";
+            price = menu.getPrice();
+            num = customer.getOrderList().get(menu);
+            tot += price * num;
             System.out.println(menu.getName() + " x " + quantity);
         }
 
+        receipt += "total price : " + tot + "$\n";
+        System.out.println("total price : " + tot + "$\n");
         receipt += "</html>";
 
         JLabel receiptLabel = new JLabel(receipt);
@@ -354,40 +340,30 @@ class McDonaldsKiosk extends JFrame {
     private void orderEnd() {
         getContentPane().removeAll();
         
-        HashMap<Menu, Integer> currentOrderList = customer.getOrderList();
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        JButton closeButton = new JButton("Exit");
+        closeButton.setFont(new Font("Arial", Font.BOLD, 20));
+        closeButton.addActionListener(e -> System.exit(0)); // Close the application
         
-        double totalAmount = 0;
-        for (Menu menu : currentOrderList.keySet()) {
-            totalAmount += menu.getPrice() * currentOrderList.get(menu);
-        }
+        JButton mainButton = new JButton("Return to Main");
+        mainButton.setFont(new Font("Arial", Font.BOLD, 20));
+        mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
         
-        Order newOrder = new Order(currentOrderList, totalAmount, orderNumber);
-        allOrders.add(newOrder);
+        JButton loginButton = new JButton("Login");
+        mainButton.setFont(new Font("Arial", Font.BOLD, 20));
+        mainButton.addActionListener(e -> showLoginPage()); // Return to the main page
         
-    	customer.removeAllMenu(customer.getOrderList());
-    	
-    	
-    	JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
-    	JButton closeButton = new JButton("종료하기");
-    	JButton mainButton = new JButton("메인 메뉴로 이동하기");
-    	JButton loginButton = new JButton("사장님 로그인");
-    	
-    	buttonPanel.add(closeButton);
-    	buttonPanel.add(mainButton);
-    	buttonPanel.add(loginButton);
-    	
-    	closeButton.addActionListener(e -> {
-    		printSalesReport();
-    		System.exit(0);
-    	});
-    	mainButton.addActionListener(e -> howToEatPage());
-    	loginButton.addActionListener(e -> showLoginPage());
-    	
-    	add(buttonPanel);
-    	
+        buttonPanel.add(closeButton);
+        buttonPanel.add(mainButton);
+        add(buttonPanel, BorderLayout.CENTER);
+        
+        allOrders.add(customer);
+        customer.removeAllMenu();
+        
         revalidate();
         repaint();
     }
+
     
     public static void showLoginPage() {
         JFrame loginFrame = new JFrame("비밀번호 입력");
@@ -421,7 +397,6 @@ class McDonaldsKiosk extends JFrame {
 
                 if (enteredPassword.equals(correctPassword)) {
                     loginFrame.dispose();  // 로그인 창 닫기
-                    showManagerPage();  // 사장님 페이지 열기
                 } else {
                     JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다.");
                 }
@@ -434,12 +409,7 @@ class McDonaldsKiosk extends JFrame {
     }
     
     private void showManagerPage() {
-        // orderList를 사용하여 매출 정보 표시
-        // 예시:
-        for (Menu menu : orderList.keySet()) {
-            int quantity = orderList.get(menu);
-            System.out.println(menu.getName() + ": " + quantity + "개 판매");
-        }
+       
     }
 
 
