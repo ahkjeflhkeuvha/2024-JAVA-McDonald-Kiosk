@@ -18,6 +18,7 @@ class McDonaldsKiosk extends JFrame {
     public Customer customer = new Customer();
     public static int orderNumber = 1;
     public List<Customer> allOrders = new ArrayList<>();
+    public HashMap<String, Double> totOrder = new HashMap<>();
  
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
@@ -30,6 +31,8 @@ class McDonaldsKiosk extends JFrame {
         		double price = m.getPrice();
         		int num = order.getOrderList().get(m);
         		totalRevenue += num * price;
+        		
+        		totOrder.put(m.getName(), totOrder.getOrDefault(m.getName(), 0.0) + price * num);
         	}
         	
         }
@@ -337,10 +340,10 @@ class McDonaldsKiosk extends JFrame {
     }
         
     
-    private void orderEnd() {
+    public void orderEnd() {
         getContentPane().removeAll();
         
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 3));
         JButton closeButton = new JButton("Exit");
         closeButton.setFont(new Font("Arial", Font.BOLD, 20));
         closeButton.addActionListener(e -> System.exit(0)); // Close the application
@@ -350,11 +353,12 @@ class McDonaldsKiosk extends JFrame {
         mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
         
         JButton loginButton = new JButton("Login");
-        mainButton.setFont(new Font("Arial", Font.BOLD, 20));
-        mainButton.addActionListener(e -> showLoginPage()); // Return to the main page
+        loginButton.setFont(new Font("Arial", Font.BOLD, 20));
+        loginButton.addActionListener(e -> showLoginPage()); // 로그인 페이지로 이동
         
         buttonPanel.add(closeButton);
         buttonPanel.add(mainButton);
+        buttonPanel.add(loginButton);
         add(buttonPanel, BorderLayout.CENTER);
         
         allOrders.add(customer);
@@ -364,12 +368,10 @@ class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-    
-    public static void showLoginPage() {
-        JFrame loginFrame = new JFrame("비밀번호 입력");
-        loginFrame.setSize(400, 200);
-        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setLayout(new BorderLayout());
+    public void showLoginPage() {
+        JDialog loginDialog = new JDialog((JFrame) null, "비밀번호 입력", true);
+        loginDialog.setSize(400, 200);
+        loginDialog.setLayout(new BorderLayout());
 
         JPanel loginPanel = new JPanel();
         loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
@@ -396,21 +398,60 @@ class McDonaldsKiosk extends JFrame {
                 String correctPassword = "1234";  // 사장님 비밀번호
 
                 if (enteredPassword.equals(correctPassword)) {
-                    loginFrame.dispose();  // 로그인 창 닫기
+                    showManagerPage();  // 점주 페이지 표시
+                    loginDialog.dispose();  // 로그인 창 닫기
                 } else {
-                    JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다.");
+                    JOptionPane.showMessageDialog(loginDialog, "비밀번호가 틀렸습니다.");
                 }
             }
         });
 
-        loginFrame.add(loginPanel, BorderLayout.CENTER);
-        loginFrame.setVisible(true);
-       
+        loginDialog.add(loginPanel, BorderLayout.CENTER);
+        loginDialog.setLocationRelativeTo(null);
+        loginDialog.setVisible(true);
     }
-    
-    private void showManagerPage() {
-       
+
+    public void showManagerPage() {
+        // 점주 페이지 GUI
+        JDialog managerDialog = new JDialog((JFrame) null, "점주 페이지", true);
+        managerDialog.setSize(500, 400);
+        managerDialog.setLayout(new BorderLayout());
+
+        JPanel managerPanel = new JPanel();
+        managerPanel.setLayout(new BoxLayout(managerPanel, BoxLayout.Y_AXIS));
+        managerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel headerLabel = new JLabel("오늘 팔린 메뉴");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        managerPanel.add(headerLabel);
+
+        // 판매된 메뉴와 개수를 표시하는 레이블 추가
+        Set<String> keys = totOrder.keySet();
+        for (String menuName : keys) {
+            JLabel orderLabel = new JLabel(menuName + " : " + totOrder.get(menuName) + "개");
+            orderLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+            orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            managerPanel.add(orderLabel);
+        }
+
+        // 총 매출 금액을 표시하는 레이블 추가
+        JLabel revenueLabel = new JLabel("총 매출 금액: " + calculateTotalRevenue() + "원");
+        revenueLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        revenueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        managerPanel.add(revenueLabel);
+
+        JButton closeButton = new JButton("닫기");
+        closeButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        closeButton.addActionListener(e -> managerDialog.dispose());  // 창 닫기
+        managerPanel.add(closeButton);
+
+        managerDialog.add(managerPanel, BorderLayout.CENTER);
+        managerDialog.setLocationRelativeTo(null);
+        managerDialog.setVisible(true);
     }
+
 
 
     private void loadMenu() {
