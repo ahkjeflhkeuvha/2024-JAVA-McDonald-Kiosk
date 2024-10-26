@@ -12,12 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class McDonaldsKiosk extends JFrame {
-    private ArrayList<Menu> menuList = new ArrayList<>();
-    private Customer customer = new Customer();
-    private static int orderNumber = 1;
-    private List<Order> allOrders = new ArrayList<>();
-    private HashMap<Menu, Integer> orderList = new HashMap<>(); // 주문 목록 초기화
-    
+    public ArrayList<Menu> menuList = new ArrayList<>();
+    public Customer customer = new Customer();
+    public static int orderNumber = 1;
+    public List<Order> allOrders = new ArrayList<>();
  
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
@@ -280,8 +278,6 @@ class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-    
-
     // 결제 페이지
     private void paymentPage() {
         getContentPane().removeAll();
@@ -314,7 +310,6 @@ class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-    // 결제 안내 팝업
     private void showPaymentPopup(String method, String message) {
         getContentPane().removeAll();
 
@@ -338,27 +333,7 @@ class McDonaldsKiosk extends JFrame {
         receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         add(receiptLabel, BorderLayout.CENTER);
 
-        // 주문 내용을 파일로 저장
-     // 주문 내용을 파일로 저장
-        FileWriter writer = null;
-        FileReader reader = null;
-        int c;
-        
-        try {
-        	
-            writer = new FileWriter(".//orderList.txt");
-            writer.write("Order Number: " + orderNumber + "\n");  // 이 시점에서 orderNumber 저장
-            writer.write("Payment Method: " + method + "\n");
-            writer.write("Items Ordered:\n");
-            for (Menu menu : customer.getOrderList().keySet()) {
-                int quantity = customer.getOrderList().get(menu);
-                writer.write(menu.getName() + " x " + quantity + "\n");
-            }
-            writer.write("\n");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        allOrders.add(customer);
 
         orderNumber++;  // 파일 저장 이후에 orderNumber 증가
 
