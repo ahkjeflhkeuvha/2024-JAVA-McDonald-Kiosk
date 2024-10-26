@@ -28,6 +28,7 @@ class McDonaldsKiosk extends JFrame {
         	
         	while(it.hasNext()) {
         		Menu m = it.next();
+        		System.out.println(m.getName());
         		double price = m.getPrice();
         		int num = order.getOrderList().get(m);
         		totalRevenue += num * price;
@@ -54,6 +55,8 @@ class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
 
+        customer.removeAllMenu();
+        
         // 로고 이미지 추가
         BufferedImage img = null;
     	Image resizedImage = null;
@@ -322,7 +325,6 @@ class McDonaldsKiosk extends JFrame {
         receiptLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         add(receiptLabel, BorderLayout.CENTER);
 
-        allOrders.add(customer);
 
         orderNumber++;  // 파일 저장 이후에 orderNumber 증가
 
@@ -362,7 +364,15 @@ class McDonaldsKiosk extends JFrame {
         add(buttonPanel, BorderLayout.CENTER);
         
         allOrders.add(customer);
-        customer.removeAllMenu();
+        
+        HashMap<Menu, Integer> h = customer.getOrderList();
+        Set<Menu> s = h.keySet();
+        Iterator<Menu> it = s.iterator();
+        
+        while(it.hasNext()) {
+        	Menu m = it.next();
+        	System.out.println(m.getName() + " X " + h.get(m));
+        }
         
         revalidate();
         repaint();
@@ -413,10 +423,14 @@ class McDonaldsKiosk extends JFrame {
 
     public void showManagerPage() {
         // 점주 페이지 GUI
-        JDialog managerDialog = new JDialog((JFrame) null, "점주 페이지", true);
-        managerDialog.setSize(500, 400);
-        managerDialog.setLayout(new BorderLayout());
-
+    	getContentPane().removeAll();
+    	System.out.println("show ManagerPage ");
+    	
+    	
+        double totPrice = calculateTotalRevenue();
+        System.out.println(totPrice);
+    
+    	
         JPanel managerPanel = new JPanel();
         managerPanel.setLayout(new BoxLayout(managerPanel, BoxLayout.Y_AXIS));
         managerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -429,27 +443,32 @@ class McDonaldsKiosk extends JFrame {
         // 판매된 메뉴와 개수를 표시하는 레이블 추가
         Set<String> keys = totOrder.keySet();
         for (String menuName : keys) {
-            JLabel orderLabel = new JLabel(menuName + " : " + totOrder.get(menuName) + "개");
+            JLabel orderLabel = new JLabel(menuName + " X " + totOrder.get(menuName) + "개");
+            System.out.println(menuName + " " + totOrder.get(menuName));
             orderLabel.setFont(new Font("Arial", Font.PLAIN, 16));
             orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             managerPanel.add(orderLabel);
         }
 
         // 총 매출 금액을 표시하는 레이블 추가
-        JLabel revenueLabel = new JLabel("총 매출 금액: " + calculateTotalRevenue() + "원");
+        JLabel revenueLabel = new JLabel("총 매출 금액: " +totPrice + "원");
         revenueLabel.setFont(new Font("Arial", Font.BOLD, 18));
         revenueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         managerPanel.add(revenueLabel);
+        
 
         JButton closeButton = new JButton("닫기");
         closeButton.setFont(new Font("Arial", Font.PLAIN, 16));
         closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        closeButton.addActionListener(e -> managerDialog.dispose());  // 창 닫기
         managerPanel.add(closeButton);
 
-        managerDialog.add(managerPanel, BorderLayout.CENTER);
-        managerDialog.setLocationRelativeTo(null);
-        managerDialog.setVisible(true);
+        
+        add(headerLabel);
+        add(managerPanel);
+        
+        
+        revalidate();
+        repaint();
     }
 
 
