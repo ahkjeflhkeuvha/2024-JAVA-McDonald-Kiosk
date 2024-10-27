@@ -19,7 +19,8 @@ class McDonaldsKiosk extends JFrame {
     public static int orderNumber = 1;
     public List<Customer> allOrders = new ArrayList<>();
     public HashMap<String, Double> totOrder = new HashMap<>();
-    Font font = new Font("Pretendard", Font.PLAIN, 30);
+    Font boldfont = new Font("Pretendard", Font.BOLD, 25);
+    Font regularfont = new Font("Pretendard", Font.PLAIN, 20);
     
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
@@ -52,62 +53,71 @@ class McDonaldsKiosk extends JFrame {
         howToEatPage();
     }
     // <먹고가기>, <포장하기> 옵션 선택 페이지
-    private void howToEatPage() {
-        getContentPane().removeAll();
-        repaint();
-
-        customer.removeAllMenu();
-        
-        // 로고 이미지 추가
-        BufferedImage img = null;
-    	Image resizedImage = null;
-    	ImageIcon imageIcon = null;
-    	try {
-    		img = ImageIO.read(new File(".//imgs//logo.png"));
-            resizedImage = img.getScaledInstance(100, 100, SwingConstants.CENTER);
-            imageIcon = new ImageIcon(resizedImage);
-    	} catch(Exception e) {
-    		e.printStackTrace();
-    	}
-    	
-        JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(imageIcon);
-
-        // 타이틀 추가
-        JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
-        titleLabel.setFont(font);
-
-        // 로고와 타이틀 레이아웃 설정
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BorderLayout());
-        topPanel.add(imageLabel, BorderLayout.CENTER);
-        topPanel.add(titleLabel, BorderLayout.SOUTH);
-        add(topPanel, BorderLayout.NORTH);
-
-        // 버튼 설정
-        JButton toGoButton = new JButton("Take Out");
-        JButton eatInButton = new JButton("Eat In");
-
-        ImageIcon toGoImage = new ImageIcon(".//imgs//togo.png");
-        toGoButton.setFont(font);
-        toGoButton.setIcon(toGoImage);
-        eatInButton.setFont(font);
-        eatInButton.setIcon(toGoImage);
-        
-        // 버튼을 가로로 배치
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(0, 2, 0, 0)); // 가로 배치 및 간격 조절
-        buttonPanel.add(toGoButton);
-        buttonPanel.add(eatInButton);
-        add(buttonPanel, BorderLayout.CENTER);
-
-        // 버튼 클릭 시 메뉴 페이지로 이동
-        toGoButton.addActionListener(e -> displayMenuPage());
-        eatInButton.addActionListener(e -> displayMenuPage());
-
-        revalidate();
-        repaint();
-    }
+	    private void howToEatPage() {
+	        getContentPane().removeAll();
+	        repaint();
+	
+	        customer.removeAllMenu();
+	        
+	        // 로고 이미지 추가
+	        BufferedImage img = null;
+	    	Image resizedImage = null;
+	    	ImageIcon imageIcon = null;
+	    	try {
+	    		img = ImageIO.read(new File(".//imgs//logo.png"));
+	            resizedImage = img.getScaledInstance(100, 100, SwingConstants.CENTER);
+	            imageIcon = new ImageIcon(resizedImage);
+	    	} catch(Exception e) {
+	    		e.printStackTrace();
+	    	}
+	    	
+	        JLabel imageLabel = new JLabel();
+	        imageLabel.setIcon(imageIcon);
+	
+	        // 타이틀 추가
+	        JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
+	        titleLabel.setFont(boldfont);
+	
+	        // 로고와 타이틀 레이아웃 설정
+	        JPanel topPanel = new JPanel();
+	        topPanel.setLayout(new BorderLayout());
+	        topPanel.add(imageLabel, BorderLayout.CENTER);
+	        topPanel.add(titleLabel, BorderLayout.SOUTH);
+	        add(topPanel, BorderLayout.NORTH);
+	
+	        // 버튼 설정
+	        JButton toGoButton = new JButton("Take Out");
+	        JButton eatInButton = new JButton("Eat In");
+	
+	        ImageIcon toGoImage = new ImageIcon(".//imgs//Automobile.png");
+	        ImageIcon eatInImage = new ImageIcon(".//imgs//Convenience Store.png");
+	        toGoButton.setFont(regularfont);
+	        toGoButton.setIcon(toGoImage);
+	        toGoButton.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 가로 위치 중앙
+	        toGoButton.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 세로 위치 하단
+	        
+	        
+	        toGoButton.setBorderPainted(false);
+	        eatInButton.setFont(regularfont);
+	        eatInButton.setIcon(eatInImage);
+	        eatInButton.setBorderPainted(false);
+	        eatInButton.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 가로 위치 중앙
+	        eatInButton.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 세로 위치 하단
+	        
+	        // 버튼을 가로로 배치
+	        JPanel buttonPanel = new JPanel();
+	        buttonPanel.setLayout(new GridLayout(0, 2, 0, 0)); // 가로 배치 및 간격 조절
+	        buttonPanel.add(toGoButton);
+	        buttonPanel.add(eatInButton);
+	        add(buttonPanel, BorderLayout.CENTER);
+	
+	        // 버튼 클릭 시 메뉴 페이지로 이동
+	        toGoButton.addActionListener(e -> displayMenuPage());
+	        eatInButton.addActionListener(e -> displayMenuPage());
+	
+	        revalidate();
+	        repaint();
+	    }
     
     // 메뉴 페이지
     private void displayMenuPage() {
@@ -141,11 +151,11 @@ class McDonaldsKiosk extends JFrame {
 
             
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
-            nameLabel.setFont(font);
+            nameLabel.setFont(boldfont);
             itemPanel.add(nameLabel, BorderLayout.NORTH);
 
             JLabel priceLabel = new JLabel("$" + menu.getPrice(), SwingConstants.CENTER);
-            priceLabel.setFont(font);
+            priceLabel.setFont(regularfont);
             itemPanel.add(priceLabel, BorderLayout.SOUTH);
             
             JLabel imageLabel = new JLabel(menu.getImage());
@@ -165,7 +175,8 @@ class McDonaldsKiosk extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         JButton cartButton = new JButton("Go to Cart");
-        cartButton.setFont(font);
+        cartButton.setFont(regularfont);
+        cartButton.setBorderPainted(false);
         cartButton.addActionListener(e -> showCartPage());
         add(cartButton, BorderLayout.SOUTH);
 
@@ -185,7 +196,7 @@ class McDonaldsKiosk extends JFrame {
         JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
                 + "Price: $" + menu.getPrice() + "\n\n"
                 + "Description: " + menu.getDescription());
-        infoArea.setFont(font);
+        infoArea.setFont(regularfont);
         infoArea.setEditable(false);
         dialog.add(infoArea, BorderLayout.CENTER);
 
@@ -193,12 +204,14 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.setLayout(new GridLayout(1, 2));
 
         JButton addButton = new JButton("Add to Cart");
+        addButton.setBorderPainted(false);
         addButton.addActionListener(e -> {
             customer.addMenu(menu);
             dialog.dispose();
         });
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBorderPainted(false);
         cancelButton.addActionListener(e -> dialog.dispose());
 
         buttonPanel.add(addButton);
@@ -228,7 +241,7 @@ class McDonaldsKiosk extends JFrame {
 
             // 메뉴 이름
             JLabel nameLabel = new JLabel(menu.getName());
-            nameLabel.setFont(font);
+            nameLabel.setFont(boldfont);
             nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
             itemPanel.add(nameLabel);
 
@@ -240,7 +253,7 @@ class McDonaldsKiosk extends JFrame {
             // 메뉴 수량
             int quantity = customer.getOrderList().get(menu);
             JLabel quantityLabel = new JLabel("Quantity: " + quantity);
-            quantityLabel.setFont(font);
+            quantityLabel.setFont(regularfont);
             quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
             itemPanel.add(quantityLabel);
 
@@ -254,7 +267,8 @@ class McDonaldsKiosk extends JFrame {
 
         // 결제 버튼 추가
         JButton checkoutButton = new JButton("Checkout");
-        checkoutButton.setFont(font);
+        checkoutButton.setBorderPainted(false);
+        checkoutButton.setFont(regularfont);
         checkoutButton.addActionListener(e -> paymentPage());
         add(checkoutButton, BorderLayout.SOUTH);
 
@@ -268,16 +282,29 @@ class McDonaldsKiosk extends JFrame {
         repaint();
 
         JLabel titleLabel = new JLabel("Select Payment Method", SwingConstants.CENTER);
-        titleLabel.setFont(font);
+        titleLabel.setFont(boldfont);
         add(titleLabel, BorderLayout.NORTH);
 
         JButton cashButton = new JButton("Cash");
+        cashButton.setBorderPainted(false);
         JButton cardButton = new JButton("Card");
+        cardButton.setBorderPainted(false);
         JButton payButton = new JButton("Pay");
+        payButton.setBorderPainted(false);
+        
+        
+        ImageIcon cashImage = new ImageIcon(".//imgs//Coin.png");
+        cashButton.setIcon(cashImage);
+        
+        ImageIcon cardImage = new ImageIcon(".//imgs//Credit Card.png");
+        cardButton.setIcon(cardImage);
+        
+        ImageIcon payImage = new ImageIcon(".//imgs//Mobile Phone.png");
+        payButton.setIcon(payImage);
 
-        cashButton.setFont(font);
-        cardButton.setFont(font);
-        payButton.setFont(font);
+        cashButton.setFont(regularfont);
+        cardButton.setFont(regularfont);
+        payButton.setFont(regularfont);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 3));
@@ -323,7 +350,7 @@ class McDonaldsKiosk extends JFrame {
         receipt += "</html>";
 
         JLabel receiptLabel = new JLabel(receipt);
-        receiptLabel.setFont(font);
+        receiptLabel.setFont(regularfont);
         add(receiptLabel, BorderLayout.CENTER);
 
 
@@ -332,7 +359,8 @@ class McDonaldsKiosk extends JFrame {
         
 
         JButton returnButton = new JButton("Return to Main");
-        returnButton.setFont(font);
+        returnButton.setBorderPainted(false);
+        returnButton.setFont(regularfont);
         returnButton.addActionListener(e -> {
         	orderEnd();
         });
@@ -348,15 +376,18 @@ class McDonaldsKiosk extends JFrame {
         
         JPanel buttonPanel = new JPanel(new GridLayout(3, 3));
         JButton closeButton = new JButton("Exit");
-        closeButton.setFont(font);
+        closeButton.setBorderPainted(false);
+        closeButton.setFont(regularfont);
         closeButton.addActionListener(e -> System.exit(0)); // Close the application
         
         JButton mainButton = new JButton("Return to Main");
-        mainButton.setFont(font);
+        mainButton.setBorderPainted(false);
+        mainButton.setFont(regularfont);
         mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
         
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(font);
+        loginButton.setBorderPainted(false);
+        loginButton.setFont(regularfont);
         loginButton.addActionListener(e -> showLoginPage()); // 로그인 페이지로 이동
         
         buttonPanel.add(closeButton);
@@ -389,7 +420,7 @@ class McDonaldsKiosk extends JFrame {
         loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel passwordLabel = new JLabel("비밀번호를 입력하세요:");
-        passwordLabel.setFont(font);
+        passwordLabel.setFont(boldfont);
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginPanel.add(passwordLabel);
 
@@ -399,7 +430,8 @@ class McDonaldsKiosk extends JFrame {
         loginPanel.add(passwordField);
 
         JButton loginButton = new JButton("로그인");
-        loginButton.setFont(font);
+        loginButton.setBorderPainted(false);
+        loginButton.setFont(regularfont);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginPanel.add(loginButton);
 
@@ -437,7 +469,7 @@ class McDonaldsKiosk extends JFrame {
         managerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JLabel headerLabel = new JLabel("오늘 팔린 메뉴");
-        headerLabel.setFont(font);
+        headerLabel.setFont(boldfont);
         headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         managerPanel.add(headerLabel);
 
@@ -446,21 +478,25 @@ class McDonaldsKiosk extends JFrame {
         for (String menuName : keys) {
             JLabel orderLabel = new JLabel(menuName + " X " + totOrder.get(menuName) + "개");
             System.out.println(menuName + " " + totOrder.get(menuName));
-            orderLabel.setFont(font);
+            orderLabel.setFont(regularfont);
             orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             managerPanel.add(orderLabel);
         }
 
         // 총 매출 금액을 표시하는 레이블 추가
         JLabel revenueLabel = new JLabel("총 매출 금액: " +totPrice + "원");
-        revenueLabel.setFont(font);
+        revenueLabel.setFont(boldfont);
         revenueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         managerPanel.add(revenueLabel);
         
 
         JButton closeButton = new JButton("닫기");
-        closeButton.setFont(font);
+        closeButton.setBorderPainted(false);
+        closeButton.setFont(regularfont);
         closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        closeButton.addActionListener(e -> {
+        	System.exit(0);
+        });
         managerPanel.add(closeButton);
 
         
