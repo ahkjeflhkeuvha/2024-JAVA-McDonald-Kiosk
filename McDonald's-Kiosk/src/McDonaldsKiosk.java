@@ -53,71 +53,92 @@ class McDonaldsKiosk extends JFrame {
         howToEatPage();
     }
     // <먹고가기>, <포장하기> 옵션 선택 페이지
-	    private void howToEatPage() {
-	        getContentPane().removeAll();
-	        repaint();
-	
-	        customer.removeAllMenu();
-	        
-	        // 로고 이미지 추가
-	        BufferedImage img = null;
-	    	Image resizedImage = null;
-	    	ImageIcon imageIcon = null;
-	    	try {
-	    		img = ImageIO.read(new File(".//imgs//logo.png"));
-	            resizedImage = img.getScaledInstance(100, 100, SwingConstants.CENTER);
-	            imageIcon = new ImageIcon(resizedImage);
-	    	} catch(Exception e) {
-	    		e.printStackTrace();
-	    	}
-	    	
-	        JLabel imageLabel = new JLabel();
-	        imageLabel.setIcon(imageIcon);
-	
-	        // 타이틀 추가
-	        JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
-	        titleLabel.setFont(boldfont);
-	
-	        // 로고와 타이틀 레이아웃 설정
-	        JPanel topPanel = new JPanel();
-	        topPanel.setLayout(new BorderLayout());
-	        topPanel.add(imageLabel, BorderLayout.CENTER);
-	        topPanel.add(titleLabel, BorderLayout.SOUTH);
-	        add(topPanel, BorderLayout.NORTH);
-	
-	        // 버튼 설정
-	        JButton toGoButton = new JButton("Take Out");
-	        JButton eatInButton = new JButton("Eat In");
-	
-	        ImageIcon toGoImage = new ImageIcon(".//imgs//Automobile.png");
-	        ImageIcon eatInImage = new ImageIcon(".//imgs//Convenience Store.png");
-	        toGoButton.setFont(regularfont);
-	        toGoButton.setIcon(toGoImage);
-	        toGoButton.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 가로 위치 중앙
-	        toGoButton.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 세로 위치 하단
-	        
-	        
-	        toGoButton.setBorderPainted(false);
-	        eatInButton.setFont(regularfont);
-	        eatInButton.setIcon(eatInImage);
-	        eatInButton.setBorderPainted(false);
-	        eatInButton.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 가로 위치 중앙
-	        eatInButton.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 세로 위치 하단
-	        
-	        // 버튼을 가로로 배치
-	        JPanel buttonPanel = new JPanel();
-	        buttonPanel.setLayout(new GridLayout(0, 2, 0, 0)); // 가로 배치 및 간격 조절
-	        buttonPanel.add(toGoButton);
-	        buttonPanel.add(eatInButton);
-	        add(buttonPanel, BorderLayout.CENTER);
-	
-	        // 버튼 클릭 시 메뉴 페이지로 이동
-	        toGoButton.addActionListener(e -> displayMenuPage());
-	        eatInButton.addActionListener(e -> displayMenuPage());
-	
-	        revalidate();
-	        repaint();
-	    }
+    private void howToEatPage() {
+        getContentPane().removeAll();
+        repaint();
+
+        customer.removeAllMenu();
+
+        // 로고 이미지 추가
+        BufferedImage img = null;
+        Image resizedImage = null;
+        ImageIcon imageIcon = null;
+        try {
+            img = ImageIO.read(new File(".//imgs//logo.png"));
+            resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(resizedImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(imageIcon);
+
+        // 타이틀 추가
+        JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
+        titleLabel.setFont(boldfont);
+
+        // 로고와 타이틀 레이아웃 설정
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.setBackground(Color.WHITE);
+        topPanel.add(imageLabel, BorderLayout.CENTER);
+        topPanel.add(titleLabel, BorderLayout.SOUTH);
+        add(topPanel, BorderLayout.NORTH);
+
+        // 버튼 설정
+        JButton toGoButton = new JButton("Take Out");
+        JButton eatInButton = new JButton("Eat In");
+
+        // 각 버튼에 사용할 이미지 아이콘 (리사이징)
+        ImageIcon toGoImage = resizeIcon(".//imgs//Automobile.png", 100, 100);
+        ImageIcon eatInImage = resizeIcon(".//imgs//Convenience Store.png", 100, 100);
+
+        // 버튼 디자인 설정
+        customizeButton(toGoButton, toGoImage);
+        customizeButton(eatInButton, eatInImage);
+
+        // 버튼을 가로로 배치하고 여백 추가
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2, 15, 0)); // 가로 배치 및 버튼 간격 설정
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50)); // 패널 여백 설정
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.add(toGoButton);
+        buttonPanel.add(eatInButton);
+        add(buttonPanel, BorderLayout.CENTER);
+
+        // 버튼 클릭 시 메뉴 페이지로 이동
+        toGoButton.addActionListener(e -> displayMenuPage());
+        eatInButton.addActionListener(e -> displayMenuPage());
+
+        revalidate();
+        repaint();
+    }
+
+    private void customizeButton(JButton button, ImageIcon icon) {
+        button.setFont(boldfont);
+        button.setIcon(icon);
+        button.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 위치 중앙
+        button.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 위치 하단
+        button.setContentAreaFilled(false); // 배경 비우기
+        button.setBorderPainted(false); // 테두리 비활성화
+        button.setFocusPainted(false); // 포커스 테두리 비활성화
+    }
+
+    // 이미지 리사이징 메서드
+    private ImageIcon resizeIcon(String filePath, int width, int height) {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File(filePath));
+            Image resizedImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(resizedImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     
     // 메뉴 페이지
     private void displayMenuPage() {
