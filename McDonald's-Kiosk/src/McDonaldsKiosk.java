@@ -17,27 +17,29 @@ class McDonaldsKiosk extends JFrame {
     public ArrayList<Menu> menuList = new ArrayList<>();
     public Customer customer = new Customer();
     public static int orderNumber = 1;
-    public List<Customer> allOrders = new ArrayList<>();
-    public HashMap<String, Double> totOrder = new HashMap<>();
+    public List<HashMap<Menu, Integer>> allOrders = new ArrayList<>();
+    public HashMap<Menu, Integer> totOrder = new HashMap<>();
+    public HashMap<String, Double> menu = new HashMap<>();
     Font boldfont = new Font("Pretendard", Font.BOLD, 25);
     Font regularfont = new Font("Pretendard", Font.PLAIN, 20);
     
     private double calculateTotalRevenue() {
         double totalRevenue = 0;
-        for(Customer order : allOrders) {
-        	Set<Menu> keys = order.getOrderList().keySet();
-        	Iterator<Menu> it = keys.iterator();
+        for(HashMap<Menu, Integer> order : allOrders) {
+        	Set<Menu> menuClass = order.keySet();
+        	Iterator<Menu> it = menuClass.iterator();
         	
         	while(it.hasNext()) {
         		Menu m = it.next();
-        		System.out.println(m.getName());
-        		double price = m.getPrice();
-        		int num = order.getOrderList().get(m);
-        		totalRevenue += num * price;
-        		
-        		totOrder.put(m.getName(), totOrder.getOrDefault(m.getName(), 0.0) + price * num);
+                int num = order.get(m);
+                
+                // System.out.println(m.getName() + " : " + num);
+                // Update totOrder
+                
+                totOrder.put(m, num);
+                
+                totalRevenue += m.getPrice() + num;
         	}
-        	
         }
 
         return totalRevenue;
@@ -416,16 +418,7 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.add(loginButton);
         add(buttonPanel, BorderLayout.CENTER);
         
-        allOrders.add(customer);
-        
-        HashMap<Menu, Integer> h = customer.getOrderList();
-        Set<Menu> s = h.keySet();
-        Iterator<Menu> it = s.iterator();
-        
-        while(it.hasNext()) {
-        	Menu m = it.next();
-        	System.out.println(m.getName() + " X " + h.get(m));
-        }
+        allOrders.add(customer.getOrderList());
         
         revalidate();
         repaint();
@@ -495,14 +488,15 @@ class McDonaldsKiosk extends JFrame {
         managerPanel.add(headerLabel);
 
         // 판매된 메뉴와 개수를 표시하는 레이블 추가
-        Set<String> keys = totOrder.keySet();
-        for (String menuName : keys) {
-            JLabel orderLabel = new JLabel(menuName + " X " + totOrder.get(menuName) + "개");
-            System.out.println(menuName + " " + totOrder.get(menuName));
-            orderLabel.setFont(regularfont);
-            orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            managerPanel.add(orderLabel);
-        }
+//        Set<String> keys = totOrder.keySet();
+//        for (String menuName : keys) {
+//        	System.out.println(menuName + " : " + totOrder.get(menuName));
+//            JLabel orderLabel = new JLabel(menuName + " X " + totOrder.get(menuName) + "개 : " + menu.get(menuName) * totOrder.get(menuName));
+//            System.out.println(menuName + " " + totOrder.get(menuName));
+//            orderLabel.setFont(regularfont);
+//            orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+//            managerPanel.add(orderLabel);
+//        }
 
         // 총 매출 금액을 표시하는 레이블 추가
         JLabel revenueLabel = new JLabel("총 매출 금액: " +totPrice + "원");
@@ -548,6 +542,8 @@ class McDonaldsKiosk extends JFrame {
                 String description = menuArray.getJSONObject(i).getString("description");
                 ImageIcon image = new ImageIcon(menuArray.getJSONObject(i).getString("image"));
 
+                
+                menu.put(name, price);
                 menuList.add(new Menu(name, price, description, image));
             }
         } catch (IOException e) {

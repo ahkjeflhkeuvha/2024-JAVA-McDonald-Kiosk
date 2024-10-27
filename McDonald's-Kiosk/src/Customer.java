@@ -6,6 +6,10 @@ public class Customer {
     void addMenu(Menu menu) {
         orderList.put(menu, orderList.getOrDefault(menu, 0) + 1);
     }
+    
+    int getNum(Menu menu) {
+    	return orderList.get(menu);
+    }
 
     void removeMenu(Menu menu) {
         if (orderList.containsKey(menu)) {
