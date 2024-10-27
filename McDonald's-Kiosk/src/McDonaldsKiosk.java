@@ -33,10 +33,10 @@ class McDonaldsKiosk extends JFrame {
         		Menu m = it.next();
                 int num = order.get(m);
                 
-                // System.out.println(m.getName() + " : " + num);
+                System.out.println(m.getName() + " : " + num);
                 // Update totOrder
                 
-                totOrder.put(m, num);
+                totOrder.put(m, totOrder.getOrDefault(m, 0) + num);
                 
                 totalRevenue += m.getPrice() + num;
         	}
@@ -475,9 +475,7 @@ class McDonaldsKiosk extends JFrame {
     	
     	
         double totPrice = calculateTotalRevenue();
-        System.out.println(totPrice);
-    
-    	
+
         JPanel managerPanel = new JPanel();
         managerPanel.setLayout(new BoxLayout(managerPanel, BoxLayout.Y_AXIS));
         managerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -488,18 +486,21 @@ class McDonaldsKiosk extends JFrame {
         managerPanel.add(headerLabel);
 
         // 판매된 메뉴와 개수를 표시하는 레이블 추가
-//        Set<String> keys = totOrder.keySet();
-//        for (String menuName : keys) {
-//        	System.out.println(menuName + " : " + totOrder.get(menuName));
-//            JLabel orderLabel = new JLabel(menuName + " X " + totOrder.get(menuName) + "개 : " + menu.get(menuName) * totOrder.get(menuName));
-//            System.out.println(menuName + " " + totOrder.get(menuName));
-//            orderLabel.setFont(regularfont);
-//            orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//            managerPanel.add(orderLabel);
-//        }
+        Set<Menu> keys = totOrder.keySet();
+        for (Menu menuName : keys) {
+        	String menuString = menuName.getName();
+        	double menuPrice = menuName.getPrice();
+        	int menuNumber = totOrder.get(menuName); 
+        	System.out.println(menuString + " : " + menuPrice + "원 => " + menuPrice + " * " + menuNumber + " = " + menuPrice * menuNumber);
+            JLabel orderLabel = new JLabel(menuString + " : " + menuPrice + "원 => " + menuPrice + " * " + menuNumber + " = " + menuPrice * menuNumber);
+            orderLabel.setFont(regularfont);
+            orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            managerPanel.add(orderLabel);
+        }
 
         // 총 매출 금액을 표시하는 레이블 추가
-        JLabel revenueLabel = new JLabel("총 매출 금액: " +totPrice + "원");
+        System.out.println("총 매출 금액: " + totPrice + "원");
+        JLabel revenueLabel = new JLabel("총 매출 금액: " + totPrice + "원");
         revenueLabel.setFont(boldfont);
         revenueLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         managerPanel.add(revenueLabel);
