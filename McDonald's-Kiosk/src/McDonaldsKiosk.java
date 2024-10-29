@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -504,6 +506,10 @@ class McDonaldsKiosk extends JFrame {
         managerPanel.add(revenueLabel);
         
 
+        JButton addMenu = new JButton("메뉴 추가");
+        addMenu.setBorderPainted(false);
+        addMenu.setFont(regularfont);
+        addMenu.addActionListener(e -> createMenuInputPanel());
         JButton closeButton = new JButton("닫기");
         closeButton.setBorderPainted(false);
         closeButton.setFont(regularfont);
@@ -512,6 +518,7 @@ class McDonaldsKiosk extends JFrame {
         	System.exit(0);
         });
         managerPanel.add(closeButton);
+        managerPanel.add(addMenu);
 
         
         add(headerLabel);
@@ -522,8 +529,109 @@ class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
+    private HashMap<String, Double> newMenu = new HashMap<>();
+    private ArrayList<Menu> newMenuList = new ArrayList<>();
+
+    private JTextField nameField;
+    private JTextField priceField;
+    private JTextArea descriptionArea;
+    private JTextField imageField;
+    private JPanel mainPanel = new JPanel();
+    
+    private void createMenuInputPanel() {
+        // 입력 패널 생성
+    	getContentPane().removeAll();
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(4, 2));
+
+        // 메뉴 이름 입력 필드
+        inputPanel.add(new JLabel("메뉴 이름:"));
+        nameField = new JTextField();
+        inputPanel.add(nameField);
+
+        // 가격 입력 필드
+        inputPanel.add(new JLabel("가격:"));
+        priceField = new JTextField();
+        inputPanel.add(priceField);
+
+        // 설명 입력 필드
+        inputPanel.add(new JLabel("설명:"));
+        descriptionArea = new JTextArea(3, 20);
+        inputPanel.add(new JScrollPane(descriptionArea));
+
+        // 이미지 경로 입력 필드
+        inputPanel.add(new JLabel("이미지 경로:"));
+        imageField = new JTextField();
+        inputPanel.add(imageField);
 
 
+        // 버튼 패널 생성
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("추가");
+        addButton.addActionListener(new AddMenuAction());
+        buttonPanel.add(addButton);
+
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        revalidate();
+        repaint();
+    }
+
+    // 메뉴 항목 추가 액션
+    private class AddMenuAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String name = nameField.getText().trim();
+            double price;
+            try {
+                price = Double.parseDouble(priceField.getText().trim());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "올바른 가격을 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String description = descriptionArea.getText().trim();
+            String imagePath = imageField.getText().trim();
+
+            if (name.isEmpty() || description.isEmpty() || imagePath.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "모든 필드를 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            ImageIcon image = new ImageIcon(imagePath);
+            newMenu.put(name, price);
+            newMenuList.add(new Menu(name, price, description, image));
+
+            saveMenu(); // 메뉴 저장
+            clearFields(); // 필드 초기화
+            JOptionPane.showMessageDialog(null, "메뉴가 추가되었습니다.");
+        }
+    }
+
+    // JSON 파일에 메뉴 저장
+    private void saveMenu() {
+        JSONArray menuArray = new JSONArray();
+
+        try {
+        	for (Menu item : newMenuList) {
+                JSONObject menuItem = new JSONObject();
+                menuItem.put("name", item.getName());
+                menuItem.put("price", item.getPrice());
+                menuItem.put("description", item.getDescription());
+                menuItem.put("image", item.getImage().toString());
+                menuArray.put(menuItem);
+            }
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+
+        try (FileWriter fileWriter = new FileWriter("menu.json")) {
+            fileWriter.write(menuArray.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // JSON 파일에서 메뉴 로드
     private void loadMenu() {
         try (BufferedReader reader = new BufferedReader(new FileReader("menu.json"))) {
             StringBuilder jsonContent = new StringBuilder();
@@ -533,23 +641,32 @@ class McDonaldsKiosk extends JFrame {
                 jsonContent.append(line);
             }
 
-            JSONArray menuArray = new JSONArray(jsonContent.toString());
+            try {
+            	JSONArray menuArray = new JSONArray(jsonContent.toString());
 
-            for (int i = 0; i < menuArray.length(); i++) {
-                String name = menuArray.getJSONObject(i).getString("name");
-                double price = menuArray.getJSONObject(i).getDouble("price");
-                String description = menuArray.getJSONObject(i).getString("description");
-                ImageIcon image = new ImageIcon(menuArray.getJSONObject(i).getString("image"));
+                for (int i = 0; i < menuArray.length(); i++) {
+                    String name = menuArray.getJSONObject(i).getString("name");
+                    double price = menuArray.getJSONObject(i).getDouble("price");
+                    String description = menuArray.getJSONObject(i).getString("description");
+                    ImageIcon image = new ImageIcon(menuArray.getJSONObject(i).getString("image"));
 
-                
-                menu.put(name, price);
-                menuList.add(new Menu(name, price, description, image));
+                    menu.put(name, price);
+                    menuList.add(new Menu(name, price, description, image));
+                }
+            } catch(Exception e) {
+            	e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-        	e.printStackTrace();
         }
+    }
+
+    // 필드 초기화
+    private void clearFields() {
+        nameField.setText("");
+        priceField.setText("");
+        descriptionArea.setText("");
+        imageField.setText("");
     }
 
     public static void main(String[] args) {
