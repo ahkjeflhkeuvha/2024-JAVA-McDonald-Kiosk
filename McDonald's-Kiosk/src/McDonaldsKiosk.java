@@ -26,6 +26,7 @@ class McDonaldsKiosk extends JFrame {
     public static double totalPrice = 0;
     Font boldfont = new Font("Pretendard", Font.BOLD, 25);
     Font regularfont = new Font("Pretendard", Font.PLAIN, 20);
+    public static int menuid = 30;
     
     private double calculateTotalRevenue() {
         for (Menu menu : customer.getOrderList().keySet()) {
@@ -50,6 +51,7 @@ class McDonaldsKiosk extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        loadMenu();
         howToEatPage();
     }
     // <먹고가기>, <포장하기> 옵션 선택 페이지
@@ -59,20 +61,12 @@ class McDonaldsKiosk extends JFrame {
 
         customer.removeAllMenu();
 
+        JButton loginButton = new JButton();
         // 로고 이미지 추가
-        BufferedImage img = null;
-        Image resizedImage = null;
-        ImageIcon imageIcon = null;
-        try {
-            img = ImageIO.read(new File(".//imgs//logo.png"));
-            resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            imageIcon = new ImageIcon(resizedImage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(imageIcon);
+        ImageIcon loginImage = resizeIcon(".//imgs//logo.png", 200, 200);
+        customizeButton(loginButton, loginImage);
+        
+        loginButton.addActionListener(e -> showLoginPage());
 
         // 타이틀 추가
         JLabel titleLabel = new JLabel("Where will you eat today?", SwingConstants.CENTER);
@@ -82,7 +76,7 @@ class McDonaldsKiosk extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
-        topPanel.add(imageLabel, BorderLayout.CENTER);
+        topPanel.add(loginButton, BorderLayout.CENTER);
         topPanel.add(titleLabel, BorderLayout.SOUTH);
         add(topPanel, BorderLayout.NORTH);
 
@@ -408,14 +402,8 @@ class McDonaldsKiosk extends JFrame {
         mainButton.setFont(regularfont);
         mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
         
-        JButton loginButton = new JButton("Login");
-        loginButton.setBorderPainted(false);
-        loginButton.setFont(regularfont);
-        loginButton.addActionListener(e -> showLoginPage()); // 로그인 페이지로 이동
-        
         buttonPanel.add(closeButton);
         buttonPanel.add(mainButton);
-        buttonPanel.add(loginButton);
         add(buttonPanel, BorderLayout.CENTER);
         
         allOrders.add(customer.getOrderList());
@@ -539,40 +527,54 @@ class McDonaldsKiosk extends JFrame {
     private JPanel mainPanel = new JPanel();
     
     private void createMenuInputPanel() {
-        // 입력 패널 생성
-    	getContentPane().removeAll();
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(4, 2));
+        getContentPane().removeAll();
+        mainPanel.removeAll();
 
-        // 메뉴 이름 입력 필드
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+
         inputPanel.add(new JLabel("메뉴 이름:"));
         nameField = new JTextField();
         inputPanel.add(nameField);
 
-        // 가격 입력 필드
         inputPanel.add(new JLabel("가격:"));
         priceField = new JTextField();
         inputPanel.add(priceField);
 
-        // 설명 입력 필드
         inputPanel.add(new JLabel("설명:"));
         descriptionArea = new JTextArea(3, 20);
         inputPanel.add(new JScrollPane(descriptionArea));
 
-        // 이미지 경로 입력 필드
         inputPanel.add(new JLabel("이미지 경로:"));
         imageField = new JTextField();
+        imageField.setEditable(false);
         inputPanel.add(imageField);
 
+        JButton selectImageButton = new JButton("이미지 선택");
+        selectImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Image Files", "jpg", "png", "jpeg", "gif"));
+                int result = fileChooser.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    imageField.setText(selectedFile.getAbsolutePath());
+                }
+            }
+        });
+        inputPanel.add(selectImageButton);
 
-        // 버튼 패널 생성
         JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton("추가");
         addButton.addActionListener(new AddMenuAction());
         buttonPanel.add(addButton);
 
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(inputPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        
+
+        add(mainPanel);
+
         revalidate();
         repaint();
     }
@@ -582,15 +584,16 @@ class McDonaldsKiosk extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String name = nameField.getText().trim();
+            String description = descriptionArea.getText().trim();
+            String imagePath = imageField.getText().trim();
             double price;
+
             try {
                 price = Double.parseDouble(priceField.getText().trim());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "올바른 가격을 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            String description = descriptionArea.getText().trim();
-            String imagePath = imageField.getText().trim();
 
             if (name.isEmpty() || description.isEmpty() || imagePath.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "모든 필드를 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
@@ -598,11 +601,12 @@ class McDonaldsKiosk extends JFrame {
             }
 
             ImageIcon image = new ImageIcon(imagePath);
+            Menu newMenuItem = new Menu(menuid++, name, price, description, image);
             newMenu.put(name, price);
-            newMenuList.add(new Menu(name, price, description, image));
+            newMenuList.add(newMenuItem);
 
-            saveMenu(); // 메뉴 저장
-            clearFields(); // 필드 초기화
+            saveMenu();
+            clearFields();
             JOptionPane.showMessageDialog(null, "메뉴가 추가되었습니다.");
         }
     }
@@ -614,10 +618,11 @@ class McDonaldsKiosk extends JFrame {
         try {
         	for (Menu item : newMenuList) {
                 JSONObject menuItem = new JSONObject();
+                menuItem.put("id", item.getId());
                 menuItem.put("name", item.getName());
                 menuItem.put("price", item.getPrice());
                 menuItem.put("description", item.getDescription());
-                menuItem.put("image", item.getImage().toString());
+                menuItem.put("image", item.getImage());
                 menuArray.put(menuItem);
             }
         } catch (Exception e) {
@@ -641,22 +646,21 @@ class McDonaldsKiosk extends JFrame {
                 jsonContent.append(line);
             }
 
-            try {
-            	JSONArray menuArray = new JSONArray(jsonContent.toString());
+            JSONArray menuArray = new JSONArray(jsonContent.toString());
+            for (int i = 0; i < menuArray.length(); i++) {
+                JSONObject menuItem = menuArray.getJSONObject(i);
+                int id = menuItem.getInt("id");
+                String name = menuItem.getString("name");
+                double price = menuItem.getDouble("price");
+                String description = menuItem.getString("description");
+                String imagePath = menuItem.getString("image");
+                ImageIcon image = new ImageIcon(imagePath);
 
-                for (int i = 0; i < menuArray.length(); i++) {
-                    String name = menuArray.getJSONObject(i).getString("name");
-                    double price = menuArray.getJSONObject(i).getDouble("price");
-                    String description = menuArray.getJSONObject(i).getString("description");
-                    ImageIcon image = new ImageIcon(menuArray.getJSONObject(i).getString("image"));
-
-                    menu.put(name, price);
-                    menuList.add(new Menu(name, price, description, image));
-                }
-            } catch(Exception e) {
-            	e.printStackTrace();
+                Menu item = new Menu(id, name, price, description, image);
+                newMenu.put(name, price);
+                newMenuList.add(item);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
