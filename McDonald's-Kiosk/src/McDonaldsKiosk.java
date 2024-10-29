@@ -146,16 +146,7 @@ class McDonaldsKiosk extends JFrame {
         menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));
 
         for (Menu menu : menuList) {
-        	BufferedImage img = null;
-        	Image resizedImage = null;
-        	ImageIcon imageIcon = null;
-        	try {
-        		img = ImageIO.read(new File(".//imgs//Rectangle.png"));
-                resizedImage = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                imageIcon = new ImageIcon(resizedImage);
-        	} catch(Exception e) {
-        		e.printStackTrace();
-        	}
+        	ImageIcon imageIcon = resizeIcon(".//imgs//Rectangle.png", 100, 100);
             JLabel backgroundJ = new JLabel();
             backgroundJ.setIcon(imageIcon);
             JPanel itemPanel = new JPanel(); 
@@ -169,11 +160,11 @@ class McDonaldsKiosk extends JFrame {
             nameLabel.setFont(boldfont);
             itemPanel.add(nameLabel, BorderLayout.NORTH);
 
-            JLabel priceLabel = new JLabel("$" + menu.getPrice(), SwingConstants.CENTER);
+            JLabel priceLabel = new JLabel(menu.getPrice() + "원", SwingConstants.CENTER);
             priceLabel.setFont(regularfont);
             itemPanel.add(priceLabel, BorderLayout.SOUTH);
             
-            JLabel imageLabel = new JLabel(menu.getImage());
+            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
             itemPanel.add(imageLabel, BorderLayout.CENTER);
 
             itemPanel.addMouseListener(new MouseAdapter() {
@@ -205,12 +196,12 @@ class McDonaldsKiosk extends JFrame {
         dialog.setLayout(new BorderLayout());
         dialog.setSize(400, 500);
 
-        JLabel imageLabel = new JLabel(menu.getImage());
+        JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
         dialog.add(imageLabel, BorderLayout.NORTH);
 
         JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
-                + "Price: $" + menu.getPrice() + "\n\n"
-                + "Description: " + menu.getDescription());
+                + "가격 : " + menu.getPrice() + "\n\n"
+                + menu.getDescription());
         infoArea.setFont(regularfont);
         infoArea.setEditable(false);
         dialog.add(infoArea, BorderLayout.CENTER);
@@ -218,14 +209,14 @@ class McDonaldsKiosk extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 2));
 
-        JButton addButton = new JButton("Add to Cart");
+        JButton addButton = new JButton("장바구니에 추가");
         addButton.setBorderPainted(false);
         addButton.addActionListener(e -> {
             customer.addMenu(menu);
             dialog.dispose();
         });
 
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("취소");
         cancelButton.setBorderPainted(false);
         cancelButton.addActionListener(e -> dialog.dispose());
 
@@ -261,7 +252,7 @@ class McDonaldsKiosk extends JFrame {
             itemPanel.add(nameLabel);
 
             // 메뉴 이미지
-            JLabel imageLabel = new JLabel(menu.getImage());
+            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
             imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
             itemPanel.add(imageLabel); // 이미지 추가
 
@@ -600,8 +591,7 @@ class McDonaldsKiosk extends JFrame {
                 return;
             }
 
-            ImageIcon image = new ImageIcon(imagePath);
-            Menu newMenuItem = new Menu(menuid++, name, price, description, image);
+            Menu newMenuItem = new Menu(menuid++, name, price, description, imagePath);
             newMenu.put(name, price);
             newMenuList.add(newMenuItem);
 
@@ -638,7 +628,15 @@ class McDonaldsKiosk extends JFrame {
 
     // JSON 파일에서 메뉴 로드
     private void loadMenu() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("menu.json"))) {
+        File file = new File("menu.json");
+
+        // JSON 파일이 없으면 빈 메뉴로 시작
+        if (!file.exists()) {
+            System.out.println("menu.json 파일이 존재하지 않아 빈 메뉴로 시작합니다.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             StringBuilder jsonContent = new StringBuilder();
             String line;
 
@@ -654,11 +652,15 @@ class McDonaldsKiosk extends JFrame {
                 double price = menuItem.getDouble("price");
                 String description = menuItem.getString("description");
                 String imagePath = menuItem.getString("image");
-                ImageIcon image = new ImageIcon(imagePath);
 
-                Menu item = new Menu(id, name, price, description, image);
+                // JSON에서 이미지 경로를 받아와 ImageIcon으로 생성 
+                
+                Menu item = new Menu(id, name, price, description, imagePath);
                 newMenu.put(name, price);
                 newMenuList.add(item);
+                
+                menu.put(name, price);
+                menuList.add(new Menu(id, name, price, description, imagePath));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -671,6 +673,8 @@ class McDonaldsKiosk extends JFrame {
         priceField.setText("");
         descriptionArea.setText("");
         imageField.setText("");
+        
+        howToEatPage();
     }
 
     public static void main(String[] args) {
