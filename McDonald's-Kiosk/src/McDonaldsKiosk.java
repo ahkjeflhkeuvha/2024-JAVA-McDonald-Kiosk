@@ -21,9 +21,9 @@ class McDonaldsKiosk extends JFrame {
     public static int orderNumber = 1;
     public List<HashMap<Menu, Integer>> allOrders = new ArrayList<>();
     public HashMap<String, Integer> totOrder = new HashMap<>();
-    public HashMap<String, Double> menu = new HashMap<>();
-    public static double totalRevenue = 0;
-    public static double totalPrice = 0;
+    public HashMap<String, Integer> menu = new HashMap<>();
+    public static int totalRevenue = 0;
+    public static int totalPrice = 0;
     Font boldfont = new Font("Pretendard", Font.BOLD, 25);
     Font regularfont = new Font("Pretendard", Font.PLAIN, 20);
     public static int menuid = 30;
@@ -32,7 +32,7 @@ class McDonaldsKiosk extends JFrame {
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             String menuName = menu.getName();
-            double price = menu.getPrice();
+            int price = menu.getPrice();
             int num = customer.getOrderList().get(menu);
             
             totOrder.put(menuName, totOrder.getOrDefault(menuName, 0) + num);
@@ -258,7 +258,7 @@ class McDonaldsKiosk extends JFrame {
 
             // 메뉴 수량
             int quantity = customer.getOrderList().get(menu);
-            JLabel quantityLabel = new JLabel("Quantity: " + quantity);
+            JLabel quantityLabel = new JLabel("개수 : " + quantity);
             quantityLabel.setFont(regularfont);
             quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
             itemPanel.add(quantityLabel);
@@ -272,7 +272,7 @@ class McDonaldsKiosk extends JFrame {
         add(scrollPane, BorderLayout.CENTER); 
 
         // 결제 버튼 추가
-        JButton checkoutButton = new JButton("Checkout");
+        JButton checkoutButton = new JButton("결제하기");
         checkoutButton.setBorderPainted(false);
         checkoutButton.setFont(regularfont);
         checkoutButton.addActionListener(e -> paymentPage());
@@ -287,15 +287,15 @@ class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
 
-        JLabel titleLabel = new JLabel("Select Payment Method", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("주문 방법을 선택해주세요", SwingConstants.CENTER);
         titleLabel.setFont(boldfont);
         add(titleLabel, BorderLayout.NORTH);
 
-        JButton cashButton = new JButton("Cash");
+        JButton cashButton = new JButton("현금");
         cashButton.setBorderPainted(false);
-        JButton cardButton = new JButton("Card");
+        JButton cardButton = new JButton("카드");
         cardButton.setBorderPainted(false);
-        JButton payButton = new JButton("Pay");
+        JButton payButton = new JButton("모바일 페이");
         payButton.setBorderPainted(false);
         
         
@@ -330,18 +330,18 @@ class McDonaldsKiosk extends JFrame {
     private void showPaymentPopup(String method, String message) {
         getContentPane().removeAll();
         
-        double price = 0.0;
+        int price = 0;
         int num = 0;
-        double tot = 0.0;
+        int tot = 0;
 
         String receipt = "";
 
         // 영수증 출력
-        System.out.println("Order Number: " + orderNumber);
-        System.out.println("Payment Method: " + method);
-        System.out.println("Items Ordered:");
+        System.out.println("주문 번호 : " + orderNumber);
+        System.out.println("결제 방법 : " + method);
+        System.out.println("---------- 주문 내역 ----------");
 
-        receipt += "<html>Order Number: " + orderNumber + "<br>Payment Method: " + method + "<br>Items Ordered:<br>";
+        receipt += "<html>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br>---------- 주문 내역 ----------<br>";
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += menu.getName() + " x " + quantity + "<br>";
@@ -353,9 +353,9 @@ class McDonaldsKiosk extends JFrame {
       
         calculateTotalRevenue();
 
-        receipt += "total price : " + tot + "$\n";
-        System.out.println("total price : " + tot + "$\n");
-        receipt += "</html>";
+        receipt += "최종 금액 : " + tot + "원\n";
+        System.out.println("최종 금액 : " + tot + "원\n");
+        receipt += message + "<br></html>";
 
         JLabel receiptLabel = new JLabel(receipt);
         receiptLabel.setFont(regularfont);
@@ -366,7 +366,7 @@ class McDonaldsKiosk extends JFrame {
 
         
 
-        JButton returnButton = new JButton("Return to Main");
+        JButton returnButton = new JButton("다음");
         returnButton.setBorderPainted(false);
         returnButton.setFont(regularfont);
         returnButton.addActionListener(e -> {
@@ -383,12 +383,12 @@ class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         
         JPanel buttonPanel = new JPanel(new GridLayout(3, 3));
-        JButton closeButton = new JButton("Exit");
+        JButton closeButton = new JButton("종료하기");
         closeButton.setBorderPainted(false);
         closeButton.setFont(regularfont);
         closeButton.addActionListener(e -> System.exit(0)); // Close the application
         
-        JButton mainButton = new JButton("Return to Main");
+        JButton mainButton = new JButton("처음 화면으로 돌아가기");
         mainButton.setBorderPainted(false);
         mainButton.setFont(regularfont);
         mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
@@ -508,7 +508,7 @@ class McDonaldsKiosk extends JFrame {
         repaint();
     }
 
-    private HashMap<String, Double> newMenu = new HashMap<>();
+    private HashMap<String, Integer> newMenu = new HashMap<>();
     private ArrayList<Menu> newMenuList = new ArrayList<>();
 
     private JTextField nameField;
@@ -577,10 +577,10 @@ class McDonaldsKiosk extends JFrame {
             String name = nameField.getText().trim();
             String description = descriptionArea.getText().trim();
             String imagePath = imageField.getText().trim();
-            double price;
+            int price;
 
             try {
-                price = Double.parseDouble(priceField.getText().trim());
+                price = Integer.parseInt(priceField.getText().trim());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "올바른 가격을 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -649,7 +649,7 @@ class McDonaldsKiosk extends JFrame {
                 JSONObject menuItem = menuArray.getJSONObject(i);
                 int id = menuItem.getInt("id");
                 String name = menuItem.getString("name");
-                double price = menuItem.getDouble("price");
+                int price = menuItem.getInt("price");
                 String description = menuItem.getString("description");
                 String imagePath = menuItem.getString("image");
 
