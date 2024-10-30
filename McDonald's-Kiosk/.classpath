@@ -7,5 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/user/Downloads/json.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Downloads/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Downloads/mail-1.4.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +28,9 @@ class McDonaldsKiosk extends JFrame {
     Font boldfont = new Font("Pretendard", Font.BOLD, 25);
     Font regularfont = new Font("Pretendard", Font.PLAIN, 20);
     public static int menuid = 30;
+    private static final String SERVER_IP = "127.0.0.1"; // 서버 IP 주소
+    private static final int PORT = 12345; // 서버 포트 번호
+    public static String receiptEmail = "";
     
     private double calculateTotalRevenue() {
         for (Menu menu : customer.getOrderList().keySet()) {
@@ -63,7 +67,7 @@ class McDonaldsKiosk extends JFrame {
 
         JButton loginButton = new JButton();
         // 로고 이미지 추가
-        ImageIcon loginImage = resizeIcon(".//imgs//logo.png", 200, 200);
+        ImageIcon loginImage = resizeIcon(".//imgs//logo.png", 100, 100);
         customizeButton(loginButton, loginImage);
         
         loginButton.addActionListener(e -> showLoginPage());
@@ -81,12 +85,11 @@ class McDonaldsKiosk extends JFrame {
         add(topPanel, BorderLayout.NORTH);
 
         // 버튼 설정
-        JButton toGoButton = new JButton("Take Out");
-        JButton eatInButton = new JButton("Eat In");
+        JButton toGoButton = new JButton();
+        JButton eatInButton = new JButton();
 
-        // 각 버튼에 사용할 이미지 아이콘 (리사이징)
-        ImageIcon toGoImage = resizeIcon(".//imgs//Automobile.png", 100, 100);
-        ImageIcon eatInImage = resizeIcon(".//imgs//Convenience Store.png", 100, 100);
+        ImageIcon toGoImage = resizeIcon(".//imgs//togo.png", 150, 200);
+        ImageIcon eatInImage = resizeIcon(".//imgs//eatin.png", 150, 200);
 
         // 버튼 디자인 설정
         customizeButton(toGoButton, toGoImage);
@@ -196,7 +199,7 @@ class McDonaldsKiosk extends JFrame {
         dialog.setLayout(new BorderLayout());
         dialog.setSize(400, 500);
 
-        JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
+        JLabel imageLabel = new JLabel(menu.getImage());
         dialog.add(imageLabel, BorderLayout.NORTH);
 
         JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
@@ -335,16 +338,17 @@ class McDonaldsKiosk extends JFrame {
         int tot = 0;
 
         String receipt = "";
-
         // 영수증 출력
         System.out.println("주문 번호 : " + orderNumber);
         System.out.println("결제 방법 : " + method);
         System.out.println("---------- 주문 내역 ----------");
 
-        receipt += "<html>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br>---------- 주문 내역 ----------<br>";
+        receipt += "<html>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
+        receiptEmail += "주문 번호 : " + orderNumber + "\n결제 방법 : " + method + "\n\n---------- 주문 내역 ----------\n\n";
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += menu.getName() + " x " + quantity + "<br>";
+            receiptEmail += menu.getName() + " x " + quantity + "\n";
             price = menu.getPrice();
             num = customer.getOrderList().get(menu);
             tot += price * num;
@@ -353,7 +357,8 @@ class McDonaldsKiosk extends JFrame {
       
         calculateTotalRevenue();
 
-        receipt += "최종 금액 : " + tot + "원\n";
+        receipt += "최종 금액 : " + tot + "원<br>";
+        receiptEmail += "최종 금액 : " + tot + "원\n";
         System.out.println("최종 금액 : " + tot + "원\n");
         receipt += message + "<br></html>";
 
@@ -393,8 +398,14 @@ class McDonaldsKiosk extends JFrame {
         mainButton.setFont(regularfont);
         mainButton.addActionListener(e -> howToEatPage()); // Return to the main page
         
+        JButton emailButton = new JButton("이메일로 주문내역 전송하기");
+        emailButton.setBorderPainted(false);
+        emailButton.setFont(regularfont);
+        emailButton.addActionListener(e -> OrderInputPanel());
+        
         buttonPanel.add(closeButton);
         buttonPanel.add(mainButton);
+        buttonPanel.add(emailButton);
         add(buttonPanel, BorderLayout.CENTER);
         
         allOrders.add(customer.getOrderList());
@@ -469,8 +480,8 @@ class McDonaldsKiosk extends JFrame {
         for (String menuName : keys) {
         	double menuPrice = menu.get(menuName);
         	int menuNumber = totOrder.get(menuName); 
-        	System.out.println(menuName + " : " + menuPrice + "원 => " + menuPrice + " * " + menuNumber + " = " + menuPrice * menuNumber);
-            JLabel orderLabel = new JLabel(menuName + " : " + menuPrice + "원 => " + menuPrice + " * " + menuNumber + " = " + menuPrice * menuNumber);
+        	System.out.println(menuName + " : " + menuNumber + " = " + menuPrice * menuNumber);
+            JLabel orderLabel = new JLabel(menuName + " : " + menuNumber + " = " + menuPrice * menuNumber);
             totPrice += menuPrice * menuNumber;
             orderLabel.setFont(regularfont);
             orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -676,8 +687,69 @@ class McDonaldsKiosk extends JFrame {
         
         howToEatPage();
     }
+    
+    private JTextField emailField;
+    private JTextArea orderDetailsArea;
+    private JButton submitButton;
+    
+    public void OrderInputPanel() {
+    	getContentPane().removeAll();
+        setLayout(new BorderLayout());
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(2, 2, 10, 10));
+
+        // 이메일 주소 입력 필드
+        inputPanel.add(new JLabel("이메일 주소:"));
+        emailField = new JTextField();
+        inputPanel.add(emailField);
+
+        // 주문 내역 입력 필드
+        inputPanel.add(new JLabel("주문 내역:"));
+        JLabel receiptLabel = new JLabel(receiptEmail);
+        add(receiptLabel, BorderLayout.CENTER);
+
+        // 제출 버튼
+        submitButton = new JButton("주문 제출");
+        submitButton.addActionListener(new SubmitOrderAction());
+
+        // 패널에 컴포넌트 추가
+        add(inputPanel, BorderLayout.CENTER);
+        add(submitButton, BorderLayout.SOUTH);
+        
+        revalidate();
+        repaint();
+    }
+
+    // 주문 제출 버튼의 액션 리스너
+    private class SubmitOrderAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String email = emailField.getText().trim();
+            String orderDetails = receiptEmail;
+
+            // 입력 확인
+            if (email.isEmpty() || orderDetails.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "이메일과 주문 내역을 입력해 주세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 이메일 전송 메소드 호출
+            sendOrderEmail(email, orderDetails);
+        }
+    }
+
+    // 이메일 전송 메소드 (실제 구현 필요)
+    private void sendOrderEmail(String email, String orderDetails) {
+        // 예시로 이메일 전송 관련 메소드 구현
+        String subject = "주문 내역 확인";
+        String content = "고객님께서 요청하신 주문 내역입니다.\n\n" + orderDetails;
+        
+        // 이메일 전송 로직은 외부의 이메일 전송 메소드에서 구현
+        NaverEmailSender.sendEmail(email, subject, content); // 전송 성공 여부에 따라 추가 처리 가능
+    }
 
     public static void main(String[] args) {
         new McDonaldsKiosk().setVisible(true);
+        
     }
 }
