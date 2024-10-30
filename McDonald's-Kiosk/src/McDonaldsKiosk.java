@@ -199,7 +199,9 @@ class McDonaldsKiosk extends JFrame {
         dialog.setLayout(new BorderLayout());
         dialog.setSize(400, 500);
 
-        JLabel imageLabel = new JLabel(menu.getImage());
+        ImageIcon resizedImageIcon = resizeIcon(menu.getImage(), 200, 200); // resizeIcon 메소드 사용
+        JLabel imageLabel = new JLabel(resizedImageIcon);
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
         dialog.add(imageLabel, BorderLayout.NORTH);
 
         JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
@@ -255,7 +257,8 @@ class McDonaldsKiosk extends JFrame {
             itemPanel.add(nameLabel);
 
             // 메뉴 이미지
-            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
+            ImageIcon resizedImageIcon = resizeIcon(menu.getImage(), 200, 200); // resizeIcon 메소드 사용
+            JLabel imageLabel = new JLabel(resizedImageIcon);
             imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
             itemPanel.add(imageLabel); // 이미지 추가
 
@@ -338,6 +341,7 @@ class McDonaldsKiosk extends JFrame {
         int tot = 0;
 
         String receipt = "";
+        receiptEmail = "";
         // 영수증 출력
         System.out.println("주문 번호 : " + orderNumber);
         System.out.println("결제 방법 : " + method);
