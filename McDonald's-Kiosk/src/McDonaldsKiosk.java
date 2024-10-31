@@ -182,13 +182,26 @@ class McDonaldsKiosk extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(menuPanel);
         add(scrollPane, BorderLayout.CENTER);
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
 
-        JButton cartButton = new JButton("Go to Cart");
+        JButton cartButton = new JButton("장바구니로 이동");
         cartButton.setFont(regularfont);
         cartButton.setBorderPainted(false);
         cartButton.addActionListener(e -> showCartPage());
-        add(cartButton, BorderLayout.SOUTH);
+        buttonPanel.add(cartButton);
 
+        
+        JButton cancelButton = new JButton("취소");
+        cancelButton.setBorderPainted(false);
+        cancelButton.setFont(regularfont);
+        buttonPanel.add(cancelButton);
+        cancelButton.addActionListener(e -> howToEatPage());
+        
+        
+
+        add(buttonPanel, BorderLayout.SOUTH);
         revalidate();
         repaint();
     }
@@ -277,12 +290,22 @@ class McDonaldsKiosk extends JFrame {
         JScrollPane scrollPane = new JScrollPane(cartPanel); 
         add(scrollPane, BorderLayout.CENTER); 
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+        
         // 결제 버튼 추가
         JButton checkoutButton = new JButton("결제하기");
         checkoutButton.setBorderPainted(false);
         checkoutButton.setFont(regularfont);
         checkoutButton.addActionListener(e -> paymentPage());
-        add(checkoutButton, BorderLayout.SOUTH);
+        buttonPanel.add(checkoutButton);
+        
+        JButton cancelButton = new JButton("취소");
+        cancelButton.setBorderPainted(false);
+        cancelButton.setFont(regularfont);
+        cancelButton.addActionListener(e -> displayMenuPage());
+        buttonPanel.add(cancelButton);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         revalidate();
         repaint();
@@ -319,7 +342,7 @@ class McDonaldsKiosk extends JFrame {
         payButton.setFont(regularfont);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 3));
+        buttonPanel.setLayout(new GridLayout(3, 1));
         buttonPanel.add(cashButton);
         buttonPanel.add(cardButton);
         buttonPanel.add(payButton);
@@ -739,6 +762,7 @@ class McDonaldsKiosk extends JFrame {
 
             // 이메일 전송 메소드 호출
             sendOrderEmail(email, orderDetails);
+            howToEatPage();
         }
     }
 
