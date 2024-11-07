@@ -590,6 +590,7 @@ class McDonaldsKiosk extends JFrame {
 
         // 메인 패널 생성 (세로로 구성)
         JPanel managerPanel = new JPanel();
+        
         managerPanel.setLayout(new BoxLayout(managerPanel, BoxLayout.Y_AXIS));
         managerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         managerPanel.setBackground(Color.white); // 배경색 설정
@@ -672,12 +673,40 @@ class McDonaldsKiosk extends JFrame {
     private JTextField imageField;
     private JPanel mainPanel = new JPanel();
     
+    // 메뉴 항목 추가 액션
+    private class AddMenuAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String name = nameField.getText().trim();
+            String description = descriptionArea.getText().trim();
+            String imagePath = imageField.getText().trim();
+            int price;
+            try {
+                price = Integer.parseInt(priceField.getText().trim());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "올바른 가격을 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (name.isEmpty() || description.isEmpty() || imagePath.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "모든 필드를 입력하십시오.", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Menu newMenuItem = new Menu(menuid++, name, price, description, imagePath);
+            newMenu.put(name, price);
+            newMenuList.add(newMenuItem);
+            saveMenu();
+            clearFields();
+            JOptionPane.showMessageDialog(null, "메뉴가 추가되었습니다.");
+        }
+    }
+    
     private void createMenuInputPanel() {
         getContentPane().removeAll();
         mainPanel.removeAll();
 
         // 입력 패널 생성 (5x2 그리드 레이아웃)
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10)); // 여백을 추가하여 깔끔하게
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 패널 여백 설정
         inputPanel.setBackground(Color.white); // 배경색 설정
 
         // 메뉴 이름 입력 필드
@@ -744,7 +773,7 @@ class McDonaldsKiosk extends JFrame {
         addButton.setBackground(new Color(34, 139, 34)); // 버튼 배경색 (녹색)
         addButton.setForeground(Color.white); // 텍스트 색상
         addButton.setFocusPainted(false);  // 포커스 효과 제거
-        addButton.addActionListener(e -> howToEatPage());
+        addButton.addActionListener(new AddMenuAction());
         buttonPanel.add(addButton);
 
         // 메인 패널에 입력 패널과 버튼 패널 추가
@@ -852,16 +881,16 @@ class McDonaldsKiosk extends JFrame {
 
         // 이메일 입력 필드
         JLabel emailLabel = new JLabel("이메일 주소:");
-        emailLabel.setFont(new Font("Arial", Font.PLAIN, 16)); // 폰트 설정
+        emailLabel.setFont(regularfont); // 폰트 설정
         emailLabel.setForeground(Color.darkGray);
         emailField = new JTextField(20);
-        emailField.setFont(new Font("Arial", Font.PLAIN, 14)); // 폰트 설정
+        emailField.setFont(regularfont); // 폰트 설정
         inputPanel.add(emailLabel);
         inputPanel.add(emailField);
 
         // 주문 내역 레이블
         JLabel orderDetailsLabel = new JLabel("주문 내역:");
-        orderDetailsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        orderDetailsLabel.setFont(regularfont);
         orderDetailsLabel.setForeground(Color.darkGray);
         JLabel receiptLabel = new JLabel("<html>" + receiptEmail + "</html>");
         receiptLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // 주문 내역 폰트 설정
@@ -870,7 +899,7 @@ class McDonaldsKiosk extends JFrame {
 
         // 주문 제출 버튼
         submitButton = new JButton("주문 제출");
-        submitButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        submitButton.setFont(regularfont);
         submitButton.setBackground(new Color(34, 139, 34)); // 버튼 배경 색상
         submitButton.setForeground(Color.white); // 버튼 텍스트 색상
         submitButton.setFocusPainted(false);  // 포커스 효과 제거
