@@ -229,7 +229,7 @@ class McDonaldsKiosk extends JFrame {
 
         // JTextArea 생성 및 스크롤 가능하도록 JScrollPane에 추가
         JTextArea infoArea = new JTextArea(menu.getName() + "\n\n"
-                + "가격 : " + menu.getPrice() + "\n\n"
+                + "가격 : " + menu.getPrice() + "원\n\n"
                 + menu.getDescription());
         infoArea.setFont(regularfont);
         infoArea.setEditable(false);
@@ -246,26 +246,27 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.setLayout(new GridLayout(1, 2));
 
         JButton addButton = new JButton();
-        ImageIcon addToCart = resizeIcon(".//imgs//addToCart.png", 100, 20);
+        ImageIcon addToCart = resizeIcon(".//imgs//addToCart.png", 200, 40);
         addButton.setContentAreaFilled(false);
         addButton.setBorderPainted(false);
         addButton.setFocusPainted(false);
         addButton.setMargin(new Insets(0, 0, 0, 0));
         addButton.setIcon(addToCart);
-        addButton.setPreferredSize(new Dimension(200, 30));
+        addButton.setPreferredSize(new Dimension(200, 40));
         addButton.addActionListener(e -> {
             customer.addMenu(menu);
             dialog.dispose();
         });
 
         JButton cancelButton = new JButton();
-        ImageIcon Cancel = resizeIcon(".//imgs//Cancel.png", 100, 20);
+        ImageIcon Cancel = resizeIcon(".//imgs//Cancel.png", 200, 40);
         cancelButton.setIcon(Cancel);
         cancelButton.setContentAreaFilled(false);
         cancelButton.setBorderPainted(false);
         cancelButton.setFocusPainted(false);
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setIcon(Cancel);
+        cancelButton.setPreferredSize(new Dimension(200, 40));
         cancelButton.addActionListener(e -> dialog.dispose());
 
         buttonPanel.add(addButton);
@@ -278,42 +279,41 @@ class McDonaldsKiosk extends JFrame {
 
     // 장바구니 페이지
     private void showCartPage() {
+        // 화면 초기화
         getContentPane().removeAll();
+        revalidate(); // 레이아웃을 다시 계산하도록 함
         repaint();
 
         // 스크롤 가능하도록 JPanel과 JScrollPane 사용
         JPanel cartPanel = new JPanel();
-        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS)); // 아이템을 세로로 나열
-        cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));
+        cartPanel.setLayout(new GridLayout(0, 1, 100, 30)); // 메뉴 항목들을 세로로 나열
+        cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // 주문 목록에 있는 메뉴 항목들 처리
         for (Menu menu : customer.getOrderList().keySet()) {
+            System.out.println(menu.getName() + " " + menu.getImage());
             
-            JPanel itemPanel = new JPanel(); // 각 아이템을 위한 패널 생성
-            itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS)); // 세로로 정렬
-            itemPanel.setBackground(Color.white); // 개별 아이템 배경 설정
-            itemPanel.setBorder(BorderFactory.createEmptyBorder(10, 10 , 10 , 10)); // 내부 여백 추가
-            itemPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
+            // 개별 메뉴 항목을 위한 패널
+            JPanel itemPanel = new JPanel();
+            itemPanel.setLayout(new BorderLayout());
+            itemPanel.setBackground(Color.white);
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
             // 메뉴 이름
-            JLabel nameLabel = new JLabel(menu.getName());
+            JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
             nameLabel.setFont(boldfont);
-            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
-            itemPanel.add(nameLabel);
+            itemPanel.add(nameLabel, BorderLayout.NORTH);
+
+            // 메뉴 가격
+            JLabel priceLabel = new JLabel(menu.getPrice() + "원", SwingConstants.CENTER);
+            priceLabel.setFont(regularfont);
+            itemPanel.add(priceLabel, BorderLayout.SOUTH);
 
             // 메뉴 이미지
-            ImageIcon resizedImageIcon = resizeIcon(menu.getImage(), 200, 200); // resizeIcon 메소드 사용
-            JLabel imageLabel = new JLabel(resizedImageIcon);
-            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 이미지 중앙 정렬
-            itemPanel.add(imageLabel); // 이미지 추가
+            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
+            itemPanel.add(imageLabel, BorderLayout.CENTER);
 
-            // 메뉴 수량
-            int quantity = customer.getOrderList().get(menu);
-            JLabel quantityLabel = new JLabel("개수 : " + quantity);
-            quantityLabel.setFont(regularfont);
-            quantityLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 중앙 정렬 설정
-            itemPanel.add(quantityLabel);
-
-            // 개별 아이템 패널을 cartPanel에 추가
+            // cartPanel에 개별 메뉴 항목 추가
             cartPanel.add(itemPanel);
         }
 
@@ -321,26 +321,40 @@ class McDonaldsKiosk extends JFrame {
         JScrollPane scrollPane = new JScrollPane(cartPanel); 
         add(scrollPane, BorderLayout.CENTER); 
 
+        // 버튼 패널 설정
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 2));
-        
+        buttonPanel.setLayout(new GridLayout(1, 2)); // 버튼을 2개 가로로 배치
+
         // 결제 버튼 추가
-        JButton checkoutButton = new JButton("결제하기");
+        ImageIcon checkoutIcon = resizeIcon(".//imgs//checkout.png", 200, 40);
+        JButton checkoutButton = new JButton(checkoutIcon);
+        checkoutButton.setContentAreaFilled(false);
         checkoutButton.setBorderPainted(false);
-        checkoutButton.setFont(regularfont);
+        checkoutButton.setFocusPainted(false);
+        checkoutButton.setMargin(new Insets(0, 0, 0, 0));
+        checkoutButton.setPreferredSize(new Dimension(200, 40));
         checkoutButton.addActionListener(e -> paymentPage());
         buttonPanel.add(checkoutButton);
-        
-        JButton cancelButton = new JButton("취소");
+
+        // 취소 버튼 추가
+        ImageIcon cancelIcon = resizeIcon(".//imgs//Cancel.png", 200, 40);
+        JButton cancelButton = new JButton(cancelIcon);
+        cancelButton.setContentAreaFilled(false);
         cancelButton.setBorderPainted(false);
-        cancelButton.setFont(regularfont);
+        cancelButton.setFocusPainted(false);
+        cancelButton.setMargin(new Insets(0, 0, 0, 0));
+        cancelButton.setPreferredSize(new Dimension(200, 40));
         cancelButton.addActionListener(e -> displayMenuPage());
         buttonPanel.add(cancelButton);
+
+        // 버튼 패널을 화면 하단에 추가
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // 레이아웃을 다시 계산하고 화면을 갱신
         revalidate();
         repaint();
     }
+
 
     // 결제 페이지
     private void paymentPage() {
@@ -353,10 +367,22 @@ class McDonaldsKiosk extends JFrame {
 
         JButton cashButton = new JButton();
         cashButton.setBorderPainted(false);
+        cashButton.setContentAreaFilled(false);
+        cashButton.setBorderPainted(false);
+        cashButton.setFocusPainted(false);
+        cashButton.setMargin(new Insets(0, 0, 0, 0));
         JButton cardButton = new JButton();
         cardButton.setBorderPainted(false);
+        cardButton.setContentAreaFilled(false);
+        cardButton.setBorderPainted(false);
+        cardButton.setFocusPainted(false);
+        cardButton.setMargin(new Insets(0, 0, 0, 0));
         JButton payButton = new JButton();
         payButton.setBorderPainted(false);
+        payButton.setContentAreaFilled(false);
+        payButton.setBorderPainted(false);
+        payButton.setFocusPainted(false);
+        payButton.setMargin(new Insets(0, 0, 0, 0));
         
         
         ImageIcon cashImage = resizeIcon(".//imgs//coin.png", 200, 250);
