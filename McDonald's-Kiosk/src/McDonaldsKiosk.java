@@ -31,8 +31,9 @@ class McDonaldsKiosk extends JFrame {
     private static final String SERVER_IP = "127.0.0.1"; // 서버 IP 주소
     private static final int PORT = 12345; // 서버 포트 번호
     public static String receiptEmail = "";
+    public static String receipt = "";
     
-    private double calculateTotalRevenue() {
+    private int calculateTotalRevenue() {
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             String menuName = menu.getName();
@@ -194,7 +195,7 @@ class McDonaldsKiosk extends JFrame {
         cartButton.setFocusPainted(false);
         cartButton.setMargin(new Insets(0, 0, 0, 0));
         cartButton.setIcon(moveToCart);
-        cartButton.setPreferredSize(new Dimension(200, 40));
+        cartButton.setPreferredSize(new Dimension(150, 40));
         cartButton.addActionListener(e -> showCartPage());
         buttonPanel.add(cartButton);
 
@@ -246,27 +247,27 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.setLayout(new GridLayout(1, 2));
 
         JButton addButton = new JButton();
-        ImageIcon addToCart = resizeIcon(".//imgs//addToCart.png", 200, 40);
+        ImageIcon addToCart = resizeIcon(".//imgs//addToCart.png", 150, 30);
         addButton.setContentAreaFilled(false);
         addButton.setBorderPainted(false);
         addButton.setFocusPainted(false);
         addButton.setMargin(new Insets(0, 0, 0, 0));
         addButton.setIcon(addToCart);
-        addButton.setPreferredSize(new Dimension(200, 40));
+        addButton.setPreferredSize(new Dimension(150, 30));
         addButton.addActionListener(e -> {
             customer.addMenu(menu);
             dialog.dispose();
         });
 
         JButton cancelButton = new JButton();
-        ImageIcon Cancel = resizeIcon(".//imgs//Cancel.png", 200, 40);
+        ImageIcon Cancel = resizeIcon(".//imgs//Cancel.png", 150, 30);
         cancelButton.setIcon(Cancel);
         cancelButton.setContentAreaFilled(false);
         cancelButton.setBorderPainted(false);
         cancelButton.setFocusPainted(false);
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setIcon(Cancel);
-        cancelButton.setPreferredSize(new Dimension(200, 40));
+        cancelButton.setPreferredSize(new Dimension(150, 30));
         cancelButton.addActionListener(e -> dialog.dispose());
 
         buttonPanel.add(addButton);
@@ -423,7 +424,7 @@ class McDonaldsKiosk extends JFrame {
         int num = 0;
         int tot = 0;
 
-        String receipt = "";
+        receipt = "";
         receiptEmail = "";
 
         // 영수증 출력
@@ -431,13 +432,13 @@ class McDonaldsKiosk extends JFrame {
         System.out.println("결제 방법 : " + method);
         System.out.println("---------- 주문 내역 ----------");
 
-        receipt += "<html><div style='text-align:center; font-size:18px; font-weight:bold;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
-        receiptEmail += "주문 번호 : " + orderNumber + "\n결제 방법 : " + method + "\n\n---------- 주문 내역 ----------\n\n";
+        receipt += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
+        receiptEmail += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
         
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
-            receiptEmail += menu.getName() + " x " + quantity + "\n";
+            receiptEmail += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
             price = menu.getPrice();
             num = customer.getOrderList().get(menu);
             tot += price * num;
@@ -447,7 +448,7 @@ class McDonaldsKiosk extends JFrame {
         calculateTotalRevenue();
 
         receipt += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
-        receiptEmail += "최종 금액 : " + tot + "원\n";
+        receiptEmail += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
         System.out.println("최종 금액 : " + tot + "원\n");
         receipt += "<br><div style='font-size:14px; color:gray;'>" + message + "<br><br></div></html>";
 
@@ -464,13 +465,13 @@ class McDonaldsKiosk extends JFrame {
         orderNumber++;
 
         // '다음' 버튼 설정 (next.png 이미지 사용)
-        ImageIcon nextIcon = resizeIcon(".//imgs//next.png", 400, 80);
+        ImageIcon nextIcon = resizeIcon(".//imgs//next.png", 400, 40);
         JButton returnButton = new JButton(nextIcon);
         returnButton.setContentAreaFilled(false);
         returnButton.setBorderPainted(false);
         returnButton.setFocusPainted(false);
         returnButton.setMargin(new Insets(0, 0, 0, 0));
-        returnButton.setPreferredSize(new Dimension(400, 80));
+        returnButton.setPreferredSize(new Dimension(400, 40));
         returnButton.addActionListener(e -> {
             orderEnd();
         });
@@ -493,7 +494,7 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));  // 여백 추가
 
         // "종료하기" 버튼
-        ImageIcon exitIcon = resizeIcon(".//imgs//exit.png", 400, 250);
+        ImageIcon exitIcon = resizeIcon(".//imgs//exit.png", 320, 200);
         JButton closeButton = new JButton(exitIcon);
         closeButton.setContentAreaFilled(false);
         closeButton.setBorderPainted(false);
@@ -504,7 +505,7 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.add(closeButton);
 
         // "처음 화면으로 돌아가기" 버튼
-        ImageIcon returnIcon = resizeIcon(".//imgs//return.png", 400, 250);
+        ImageIcon returnIcon = resizeIcon(".//imgs//return.png", 320, 200);
         JButton mainButton = new JButton(returnIcon);
         mainButton.setContentAreaFilled(false);
         mainButton.setBorderPainted(false);
@@ -515,7 +516,7 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.add(mainButton);
 
         // "이메일로 주문내역 전송하기" 버튼
-        ImageIcon emailIcon = resizeIcon(".//imgs//email.png", 400, 250);
+        ImageIcon emailIcon = resizeIcon(".//imgs//email.png", 320, 200);
         JButton emailButton = new JButton(emailIcon);
         emailButton.setContentAreaFilled(false);
         emailButton.setBorderPainted(false);
@@ -552,14 +553,16 @@ class McDonaldsKiosk extends JFrame {
         loginPanel.add(passwordLabel);
 
         JPasswordField passwordField = new JPasswordField(20);
-        passwordField.setMaximumSize(new Dimension(200, 30));
+        passwordField.setMaximumSize(new Dimension(400, 40));
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginPanel.add(passwordField);
 
         JButton loginButton = new JButton();
-        ImageIcon loginIcon = new ImageIcon(".//imgs//login.png");
+        ImageIcon loginIcon = resizeIcon(".//imgs//login.png", 400, 40);
         loginButton.setIcon(loginIcon);
+        loginButton.setMaximumSize(new Dimension(400, 40));
         loginButton.setBorderPainted(false);
+        loginButton.setContentAreaFilled(false); // 배경 제거
         loginButton.setFont(regularfont);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginPanel.add(loginButton);
@@ -586,9 +589,9 @@ class McDonaldsKiosk extends JFrame {
     public void showManagerPage() {
         // 점주 페이지 GUI
         getContentPane().removeAll();
-        System.out.println("show ManagerPage ");
+        System.out.println("show ManagerPage");
 
-        double totPrice = 0;
+        int totPrice = 0;
 
         // 메인 패널 생성 (세로로 구성)
         JPanel managerPanel = new JPanel();
@@ -599,7 +602,7 @@ class McDonaldsKiosk extends JFrame {
 
         // 헤더 레이블 (타이틀)
         JLabel headerLabel = new JLabel("오늘 팔린 메뉴");
-        headerLabel.setFont(regularfont);  // 폰트 스타일 변경
+        headerLabel.setFont(boldfont);  // 폰트 스타일 변경
         headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         headerLabel.setForeground(Color.darkGray);  // 타이틀 색상 설정
         managerPanel.add(headerLabel);
@@ -607,7 +610,7 @@ class McDonaldsKiosk extends JFrame {
         // 판매된 메뉴와 개수를 표시하는 레이블 추가
         Set<String> keys = totOrder.keySet();
         for (String menuName : keys) {
-            double menuPrice = menu.get(menuName);
+            int menuPrice = menu.get(menuName);
             int menuNumber = totOrder.get(menuName); 
             System.out.println(menuName + " : " + menuNumber + " = " + menuPrice * menuNumber);
             
@@ -708,6 +711,7 @@ class McDonaldsKiosk extends JFrame {
 
         // 입력 패널 생성 (5x2 그리드 레이아웃)
         JPanel inputPanel = new JPanel(new GridLayout(6, 2, 20, 20)); // 여백을 추가하여 깔끔하게
+        inputPanel.setLayout(new BorderLayout(20, 0)); // 패널 레이아웃을 BorderLayout으로 설정하고 좌우 여백 20 추가
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 패널 여백 설정
         inputPanel.setBackground(Color.white); // 배경색 설정
 
@@ -739,7 +743,7 @@ class McDonaldsKiosk extends JFrame {
         inputPanel.add(new JScrollPane(descriptionArea));
 
         // 이미지 경로 입력 필드
-        JLabel imageLabel = new JLabel("이미지 경로:");
+        JLabel imageLabel = new JLabel("이미지 경로");
         imageLabel.setFont(regularfont);
         imageLabel.setForeground(Color.darkGray);
         inputPanel.add(imageLabel);
@@ -760,11 +764,12 @@ class McDonaldsKiosk extends JFrame {
 
         // 이미지 선택 버튼
         JButton selectImageButton = new JButton();
-        ImageIcon addImage = new ImageIcon(".//imgs//addImage.png");
+        ImageIcon addImage = resizeIcon(".//imgs//addImage.png", 400, 40);
         selectImageButton.setIcon(addImage);
         selectImageButton.setFont(regularfont);
         selectImageButton.setForeground(Color.white); // 텍스트 색상
         selectImageButton.setFocusPainted(false);  // 포커스 효과 제거
+        selectImageButton.setPreferredSize(new Dimension(400, 40));
         selectImageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -898,38 +903,49 @@ class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         setLayout(new BorderLayout());
 
-        // 입력 패널 설정 (상단에 레이블, 중간에 입력 필드)
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 여백 설정
+        // 이메일 입력 패널 설정 (가로 배치)
+        JPanel emailPanel = new JPanel();
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS)); // 수평(BoxLayout)
+        emailPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 여백 설정
 
         // 이메일 입력 필드
-        JLabel emailLabel = new JLabel("이메일 주소:");
+        JLabel emailLabel = new JLabel("이메일 주소");
         emailLabel.setFont(regularfont); // 폰트 설정
         emailLabel.setForeground(Color.darkGray);
         emailField = new JTextField(20);
+        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // 가로는 최대, 높이 30
         emailField.setFont(regularfont); // 폰트 설정
-        inputPanel.add(emailLabel);
-        inputPanel.add(emailField);
 
-        // 주문 내역 레이블
-        JLabel orderDetailsLabel = new JLabel("주문 내역:");
+        emailPanel.add(emailLabel);
+        emailPanel.add(Box.createRigidArea(new Dimension(10, 0))); // 간격 추가
+        emailPanel.add(emailField);
+
+        // 주문 내역 패널 설정 (수직 배치)
+        JPanel receiptPanel = new JPanel();
+        receiptPanel.setLayout(new BoxLayout(receiptPanel, BoxLayout.Y_AXIS)); // 수직(BoxLayout)
+        receiptPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        receiptPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 여백 설정
+
+        JLabel orderDetailsLabel = new JLabel("주문 내역");
         orderDetailsLabel.setFont(regularfont);
         orderDetailsLabel.setForeground(Color.darkGray);
+        orderDetailsLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 가운데 정렬
+
         JLabel receiptLabel = new JLabel("<html>" + receiptEmail + "</html>");
-        receiptLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // 주문 내역 폰트 설정
-        inputPanel.add(orderDetailsLabel);
-        inputPanel.add(receiptLabel);
+        receiptLabel.setFont(regularfont); // 주문 내역 폰트 설정
+        receiptLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가로 가운데 정렬
+
+        receiptPanel.add(orderDetailsLabel);
+        receiptPanel.add(receiptLabel);
 
         // 주문 제출 버튼
         submitButton = new JButton();
-        ImageIcon sendOrder = new ImageIcon(".//imgs//sendOrder.png");
+        ImageIcon sendOrder = resizeIcon(".//imgs//sendOrder.png", 400, 40);
         submitButton.setIcon(sendOrder);
         submitButton.setFont(regularfont);
-        submitButton.setBackground(new Color(34, 139, 34)); // 버튼 배경 색상
         submitButton.setForeground(Color.white); // 버튼 텍스트 색상
         submitButton.setFocusPainted(false);  // 포커스 효과 제거
-        submitButton.setPreferredSize(new Dimension(200, 40)); // 버튼 크기 설정
+        submitButton.setPreferredSize(new Dimension(400, 40)); // 버튼 크기 설정
         submitButton.addActionListener(new SubmitOrderAction());
 
         // 버튼 패널 추가
@@ -938,8 +954,9 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.add(submitButton);
 
         // 전체 레이아웃에 추가
-        add(inputPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(emailPanel, BorderLayout.NORTH); // 상단에 이메일 패널 추가
+        add(receiptPanel, BorderLayout.CENTER); // 중간에 주문 내역 패널 추가
+        add(buttonPanel, BorderLayout.SOUTH); // 하단에 버튼 패널 추가
 
         revalidate();
         repaint();
