@@ -931,12 +931,20 @@ class McDonaldsKiosk extends JFrame {
         orderDetailsLabel.setForeground(Color.darkGray);
         orderDetailsLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // 가운데 정렬
 
+        // receiptLabel을 감싸는 패널을 추가하여 가운데 정렬을 보장
+        JPanel receiptLabelPanel = new JPanel();
+        receiptLabelPanel.setLayout(new BoxLayout(receiptLabelPanel, BoxLayout.X_AXIS)); // 수평 정렬
+        receiptLabelPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // 가운데 정렬
+
         JLabel receiptLabel = new JLabel("<html>" + receiptEmail + "</html>");
         receiptLabel.setFont(regularfont); // 주문 내역 폰트 설정
         receiptLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가로 가운데 정렬
 
+        receiptLabelPanel.add(receiptLabel); // receiptLabel을 패널에 추가
+
+        // 패널에 추가
         receiptPanel.add(orderDetailsLabel);
-        receiptPanel.add(receiptLabel);
+        receiptPanel.add(receiptLabelPanel); // receiptLabelPanel을 receiptPanel에 추가
 
         // 주문 제출 버튼
         submitButton = new JButton();
@@ -961,6 +969,7 @@ class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
     // 주문 제출 버튼의 액션 리스너
     private class SubmitOrderAction implements ActionListener {
