@@ -556,7 +556,9 @@ class McDonaldsKiosk extends JFrame {
         passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
         loginPanel.add(passwordField);
 
-        JButton loginButton = new JButton("로그인");
+        JButton loginButton = new JButton();
+        ImageIcon loginIcon = new ImageIcon(".//imgs//login.png");
+        loginButton.setIcon(loginIcon);
         loginButton.setBorderPainted(false);
         loginButton.setFont(regularfont);
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -705,12 +707,12 @@ class McDonaldsKiosk extends JFrame {
         mainPanel.removeAll();
 
         // 입력 패널 생성 (5x2 그리드 레이아웃)
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 10, 10)); // 여백을 추가하여 깔끔하게
+        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 20, 20)); // 여백을 추가하여 깔끔하게
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 패널 여백 설정
         inputPanel.setBackground(Color.white); // 배경색 설정
 
         // 메뉴 이름 입력 필드
-        JLabel nameLabel = new JLabel("메뉴 이름:");
+        JLabel nameLabel = new JLabel("메뉴 이름");
         nameLabel.setFont(regularfont);
         nameLabel.setForeground(Color.darkGray);
         inputPanel.add(nameLabel);
@@ -718,7 +720,7 @@ class McDonaldsKiosk extends JFrame {
         inputPanel.add(nameField);
 
         // 가격 입력 필드
-        JLabel priceLabel = new JLabel("가격:");
+        JLabel priceLabel = new JLabel("가격");
         priceLabel.setFont(regularfont);
         priceLabel.setForeground(Color.darkGray);
         inputPanel.add(priceLabel);
@@ -726,7 +728,7 @@ class McDonaldsKiosk extends JFrame {
         inputPanel.add(priceField);
 
         // 설명 입력 필드
-        JLabel descriptionLabel = new JLabel("설명:");
+        JLabel descriptionLabel = new JLabel("설명");
         descriptionLabel.setFont(regularfont);
         descriptionLabel.setForeground(Color.darkGray);
         inputPanel.add(descriptionLabel);
@@ -745,10 +747,22 @@ class McDonaldsKiosk extends JFrame {
         imageField.setEditable(false);
         inputPanel.add(imageField);
 
+        // 이미지 미리보기 JLabel 추가
+        JLabel previewLabel = new JLabel();
+        previewLabel.setFont(regularfont);
+        previewLabel.setForeground(Color.darkGray);
+        inputPanel.add(previewLabel);
+        
+        // 미리보기 이미지 표시할 JLabel
+        JLabel imagePreview = new JLabel();
+        imagePreview.setHorizontalAlignment(SwingConstants.CENTER);
+        inputPanel.add(imagePreview);
+
         // 이미지 선택 버튼
-        JButton selectImageButton = new JButton("이미지 선택");
+        JButton selectImageButton = new JButton();
+        ImageIcon addImage = new ImageIcon(".//imgs//addImage.png");
+        selectImageButton.setIcon(addImage);
         selectImageButton.setFont(regularfont);
-        selectImageButton.setBackground(new Color(100, 149, 237)); // 버튼 배경색
         selectImageButton.setForeground(Color.white); // 텍스트 색상
         selectImageButton.setFocusPainted(false);  // 포커스 효과 제거
         selectImageButton.addActionListener(new ActionListener() {
@@ -760,20 +774,29 @@ class McDonaldsKiosk extends JFrame {
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     imageField.setText(selectedFile.getAbsolutePath());
+
+                    // 이미지 미리보기
+                    try {
+                        ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
+                        Image image = imageIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH); // 이미지 크기 조정
+                        imagePreview.setIcon(new ImageIcon(image));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
-        inputPanel.add(selectImageButton);
 
         // 버튼 패널 (추가 버튼)
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         buttonPanel.setBackground(Color.white); // 배경색 설정
-        JButton addButton = new JButton("추가");
+        JButton addButton = new JButton();
+        ImageIcon addIcon = new ImageIcon(".//imgs//add.png");
+        addButton.setIcon(addIcon);
         addButton.setFont(regularfont);
-        addButton.setBackground(new Color(34, 139, 34)); // 버튼 배경색 (녹색)
-        addButton.setForeground(Color.white); // 텍스트 색상
         addButton.setFocusPainted(false);  // 포커스 효과 제거
         addButton.addActionListener(new AddMenuAction());
+        buttonPanel.add(selectImageButton);
         buttonPanel.add(addButton);
 
         // 메인 패널에 입력 패널과 버튼 패널 추가
@@ -788,6 +811,7 @@ class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
 
     // JSON 파일에 메뉴 저장
@@ -898,7 +922,9 @@ class McDonaldsKiosk extends JFrame {
         inputPanel.add(receiptLabel);
 
         // 주문 제출 버튼
-        submitButton = new JButton("주문 제출");
+        submitButton = new JButton();
+        ImageIcon sendOrder = new ImageIcon(".//imgs//sendOrder.png");
+        submitButton.setIcon(sendOrder);
         submitButton.setFont(regularfont);
         submitButton.setBackground(new Color(34, 139, 34)); // 버튼 배경 색상
         submitButton.setForeground(Color.white); // 버튼 텍스트 색상
