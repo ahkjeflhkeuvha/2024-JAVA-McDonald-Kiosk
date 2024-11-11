@@ -710,6 +710,7 @@ class McDonaldsKiosk extends JFrame {
         // 입력 패널 생성 (5x2 그리드 레이아웃)
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 20, 20)); // 여백을 추가하여 깔끔하게
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 패널 여백 설정
+        inputPanel.setMaximumSize(new Dimension(400, 200));
         inputPanel.setBackground(Color.white); // 배경색 설정
 
         // 메뉴 이름 입력 필드
