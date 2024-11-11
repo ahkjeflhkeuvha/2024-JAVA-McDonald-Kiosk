@@ -56,7 +56,6 @@ class McDonaldsKiosk extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        loadMenu();
         howToEatPage();
     }
     // <먹고가기>, <포장하기> 옵션 선택 페이지
@@ -707,11 +706,9 @@ class McDonaldsKiosk extends JFrame {
     
     private void createMenuInputPanel() {
         getContentPane().removeAll();
-        mainPanel.removeAll();
 
         // 입력 패널 생성 (5x2 그리드 레이아웃)
-        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 20, 20)); // 여백을 추가하여 깔끔하게
-        inputPanel.setLayout(new BorderLayout(20, 0)); // 패널 레이아웃을 BorderLayout으로 설정하고 좌우 여백 20 추가
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 20, 20)); // 여백을 추가하여 깔끔하게
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // 패널 여백 설정
         inputPanel.setBackground(Color.white); // 배경색 설정
 
@@ -770,6 +767,9 @@ class McDonaldsKiosk extends JFrame {
         selectImageButton.setForeground(Color.white); // 텍스트 색상
         selectImageButton.setFocusPainted(false);  // 포커스 효과 제거
         selectImageButton.setPreferredSize(new Dimension(400, 40));
+        selectImageButton.setContentAreaFilled(false); // 배경 제거
+        selectImageButton.setBackground(new Color(0, 0, 0, 0));  // 배경 투명 설정
+        selectImageButton.setBorderPainted(false);  // 테두리 제거
         selectImageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -794,28 +794,29 @@ class McDonaldsKiosk extends JFrame {
 
         // 버튼 패널 (추가 버튼)
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 20, 20));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         buttonPanel.setBackground(Color.white); // 배경색 설정
         JButton addButton = new JButton();
-        ImageIcon addIcon = new ImageIcon(".//imgs//add.png");
+        ImageIcon addIcon = resizeIcon(".//imgs//add.png", 400, 40);
         addButton.setIcon(addIcon);
         addButton.setFont(regularfont);
         addButton.setFocusPainted(false);  // 포커스 효과 제거
+        addButton.setContentAreaFilled(false); // 배경 제거
+        addButton.setBorderPainted(false);  // 테두리 제거
         addButton.addActionListener(new AddMenuAction());
+        addButton.setPreferredSize(new Dimension(400, 40));
         buttonPanel.add(selectImageButton);
         buttonPanel.add(addButton);
 
         // 메인 패널에 입력 패널과 버튼 패널 추가
-        mainPanel.setLayout(new BorderLayout());
-        mainPanel.add(inputPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        // 화면에 추가
-        add(mainPanel);
+        add(inputPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
 
         // 레이아웃 재계산 및 화면 갱신
         revalidate();
         repaint();
     }
+
 
 
 
