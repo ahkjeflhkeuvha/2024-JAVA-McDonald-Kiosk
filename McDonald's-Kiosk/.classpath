@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="C:/Users/user/Downloads/json.jar"/>
 	<classpathentry kind="lib" path="C:/Users/user/Downloads/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/user/Downloads/mail-1.4.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/Downloads/player.jar"/>
+	<classpathentry kind="lib" path="C:/Users/user/OneDrive/문서/바탕 화면/jlayer-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

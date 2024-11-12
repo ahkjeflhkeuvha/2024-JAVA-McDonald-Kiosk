@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -15,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javazoom.jl.player.Player;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 class McDonaldsKiosk extends JFrame {
     public ArrayList<Menu> menuList = new ArrayList<>();
@@ -32,6 +34,25 @@ class McDonaldsKiosk extends JFrame {
     private static final int PORT = 12345; // 서버 포트 번호
     public static String receiptEmail = "";
     public static String receipt = "";
+    public static String resPage = "";
+    
+    public void play(String fileName) {
+        try {
+            // MP3 파일을 읽기 위한 스트림 생성
+            FileInputStream fis = new FileInputStream(fileName);
+            Player player = new Player(fis); // JLayer의 Player 객체 생성
+            System.out.println(fileName + " is playing...");
+            
+            // MP3 재생 시작
+            player.play();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + fileName);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Error playing the file.");
+            e.printStackTrace();
+        }
+    }
     
     private int calculateTotalRevenue() {
         for (Menu menu : customer.getOrderList().keySet()) {
@@ -109,6 +130,7 @@ class McDonaldsKiosk extends JFrame {
         toGoButton.addActionListener(e -> displayMenuPage());
         eatInButton.addActionListener(e -> displayMenuPage());
 
+    	play(".//sounds//hello.mp3");
         revalidate();
         repaint();
     }
@@ -423,15 +445,15 @@ class McDonaldsKiosk extends JFrame {
         buttonPanel.add(payButton);
         add(buttonPanel, BorderLayout.CENTER);
 
-        cashButton.addActionListener(e -> showPaymentPopup("Cash", "영수증을 가지고 카운터로 이동하세요."));
-        cardButton.addActionListener(e -> showPaymentPopup("Card", "카드를 꽂아주세요."));
-        payButton.addActionListener(e -> showPaymentPopup("Pay", "바코드를 찍어주세요."));
+        cashButton.addActionListener(e -> showPaymentPopup("Cash", "현금", "영수증을 가지고 카운터로 이동하세요."));
+        cardButton.addActionListener(e -> showPaymentPopup("Card", "카드", "카드를 꽂아주세요."));
+        payButton.addActionListener(e -> showPaymentPopup("Pay", "페이", "바코드를 찍어주세요."));
 
         revalidate();
         repaint();
     }
 
-    private void showPaymentPopup(String method, String message) {
+    private void showPaymentPopup(String method, String pay, String message) {
         // 화면 초기화
         getContentPane().removeAll();
         revalidate(); // 레이아웃을 다시 계산하도록 함
@@ -443,6 +465,7 @@ class McDonaldsKiosk extends JFrame {
 
         receipt = "";
         receiptEmail = "";
+        resPage = "";
 
         // 영수증 출력
         System.out.println("주문 번호 : " + orderNumber);
@@ -450,11 +473,13 @@ class McDonaldsKiosk extends JFrame {
         System.out.println("---------- 주문 내역 ----------");
 
         receipt += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
+        resPage += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
         receiptEmail += "결제 방법 : " + method + "\n\n---------- 주문 내역 ----------\n\n";
         
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
+            resPage += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
             receiptEmail += menu.getName() + "("+ menu.getPrice()  + ")  x " + quantity + "\n\n";
             price = menu.getPrice();
             num = customer.getOrderList().get(menu);
@@ -465,9 +490,11 @@ class McDonaldsKiosk extends JFrame {
         calculateTotalRevenue();
 
         receipt += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
+        resPage += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
         receiptEmail += "\n\n최종 금액 : " + tot + "원\n\n";
         System.out.println("최종 금액 : " + tot + "원\n");
         receipt += "<br><div style='font-size:14px; color:gray;'>" + message + "<br><br></div></html>";
+        resPage += "<br><div style='font-size:14px; color:gray;'>" + pay + "<br><br></div></html>";
 
         // 영수증 레이블 설정
         JLabel receiptLabel = new JLabel(receipt);
@@ -518,7 +545,10 @@ class McDonaldsKiosk extends JFrame {
         closeButton.setFocusPainted(false);
         closeButton.setMargin(new Insets(0, 0, 0, 0));
         closeButton.setPreferredSize(new Dimension(400, 250));
-        closeButton.addActionListener(e -> System.exit(0));  // 애플리케이션 종료
+        closeButton.addActionListener(e -> {
+        	play(".//sounds//goodbye.mp3");
+        	System.exit(0);
+        });  // 애플리케이션 종료
         buttonPanel.add(closeButton);
 
         // "처음 화면으로 돌아가기" 버튼
@@ -956,7 +986,7 @@ class McDonaldsKiosk extends JFrame {
         receiptLabelPanel.setLayout(new BoxLayout(receiptLabelPanel, BoxLayout.X_AXIS)); // 수평 정렬
         receiptLabelPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // 가운데 정렬
 
-        JLabel receiptLabel = new JLabel("<html>" + receiptEmail + "</html>");
+        JLabel receiptLabel = new JLabel(resPage);
         receiptLabel.setFont(regularfont); // 주문 내역 폰트 설정
         receiptLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가로 가운데 정렬
 
