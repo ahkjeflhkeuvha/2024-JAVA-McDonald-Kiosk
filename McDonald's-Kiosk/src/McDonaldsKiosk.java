@@ -119,7 +119,7 @@ class McDonaldsKiosk extends JFrame {
         button.setHorizontalTextPosition(SwingConstants.CENTER); // 텍스트 위치 중앙
         button.setVerticalTextPosition(SwingConstants.BOTTOM); // 텍스트 위치 하단
         button.setContentAreaFilled(false); // 배경 비우기
-        button.setBorderPainted(false); // 테두리 비활성화
+        button.setBorderPainted(false); //  비활성화
         button.setFocusPainted(false); // 포커스 테두리 비활성화
     }
 
@@ -143,8 +143,8 @@ class McDonaldsKiosk extends JFrame {
         getContentPane().removeAll();
         repaint();
         System.out.println("눌렸음");
-        loadMenu();
 
+        loadMenu();
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(0, 1, 100, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20 , 20 , 20));

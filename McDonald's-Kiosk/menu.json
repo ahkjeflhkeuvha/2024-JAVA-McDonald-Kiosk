@@ -1,1 +1,72 @@
-[{"image":".//imgs//Hamburger.png","price":4900,"name":"햄버거","description":"특제 소스와 신선한 양상추가 더해진 육즙 가득한 쇠고기 버거입니다.","id":1},{"image":".//imgs//French Fries.png","price":1900,"name":"감자튀김","description":"황금빛으로 바삭하게 튀겨진 감자튀김으로, 누구나 좋아하는 클래식한 사이드 메뉴입니다.","id":2},{"image":".//imgs//Clinking Beer Mugs.png","price":3900,"name":"맥주","description":"시원한 맥주로, 갈증을 해소하며 식사와 함께 즐기기에 좋습니다. 여유로운 한 잔의 기쁨을 선사합니다.","id":4},{"image":".//imgs//Green Salad.png","price":3900,"name":"그린 샐러드","description":"다양한 신선한 채소가 들어간 건강한 샐러드로, 상큼한 드레싱과 함께 깔끔한 맛을 즐기실 수 있습니다.","id":5},{"image":".//imgs//Hot Dog.png","price":3900,"name":"핫도그","description":"탱글탱글한 소시지와 신선한 빵이 조화를 이루어 식사나 간식으로 딱 좋은 핫도그입니다.","id":6},{"image":".//imgs//Tropical Drink.png","price":3900,"name":"트로피컬 음료","description":"열대 과일의 풍미를 가득 담은 시원한 음료로, 상쾌하게 목을 적셔줍니다.","id":7},{"image":".//imgs//Cheese Wedge.png","price":5400,"name":"치즈버거","description":"부드러운 치즈가 쇠고기 패티 위에 녹아 더욱 진한 맛을 느낄 수 있는 치즈버거입니다.","id":9},{"image":".//imgs//Glass of Milk.png","price":1490,"name":"우유","description":"신선하고 부드러운 맛의 우유로, 식사와 함께 곁들이기 좋습니다.","id":11},{"image":".//imgs//Chocolate Bar.png","price":3490,"name":"초콜릿 쉐이크","description":"달콤하고 부드러운 초콜릿 맛이 가득한 쉐이크로, 달달한 디저트가 생각날 때 추천합니다.","id":13},{"image":".//imgs//Banana.png","price":3490,"name":"바나나 쉐이크","description":"신선한 바나나의 풍미가 가득한 쉐이크로, 간식 또는 디저트로 좋습니다.","id":14},{"image":"C:\\Users\\user\\OneDrive\\문서\\바탕 화면\\addMenu.png","price":5900,"name":"test","description":"test","id":30},{"image":"C:\\BaseNote-release\\images\\game9.jpeg","price":123,"name":"dad","description":"dfadf","id":30},{"image":".//imgs//Hamburger.png","price":4900,"name":"햄버거","description":"특제 소스와 신선한 양상추가 더해진 육즙 가득한 쇠고기 버거입니다.","id":1},{"image":".//imgs//French Fries.png","price":1900,"name":"감자튀김","description":"황금빛으로 바삭하게 튀겨진 감자튀김으로, 누구나 좋아하는 클래식한 사이드 메뉴입니다.","id":2},{"image":".//imgs//Clinking Beer Mugs.png","price":3900,"name":"맥주","description":"시원한 맥주로, 갈증을 해소하며 식사와 함께 즐기기에 좋습니다. 여유로운 한 잔의 기쁨을 선사합니다.","id":4},{"image":".//imgs//Green Salad.png","price":3900,"name":"그린 샐러드","description":"다양한 신선한 채소가 들어간 건강한 샐러드로, 상큼한 드레싱과 함께 깔끔한 맛을 즐기실 수 있습니다.","id":5},{"image":".//imgs//Hot Dog.png","price":3900,"name":"핫도그","description":"탱글탱글한 소시지와 신선한 빵이 조화를 이루어 식사나 간식으로 딱 좋은 핫도그입니다.","id":6},{"image":".//imgs//Tropical Drink.png","price":3900,"name":"트로피컬 음료","description":"열대 과일의 풍미를 가득 담은 시원한 음료로, 상쾌하게 목을 적셔줍니다.","id":7},{"image":".//imgs//Cheese Wedge.png","price":5400,"name":"치즈버거","description":"부드러운 치즈가 쇠고기 패티 위에 녹아 더욱 진한 맛을 느낄 수 있는 치즈버거입니다.","id":9},{"image":".//imgs//Glass of Milk.png","price":1490,"name":"우유","description":"신선하고 부드러운 맛의 우유로, 식사와 함께 곁들이기 좋습니다.","id":11},{"image":".//imgs//Chocolate Bar.png","price":3490,"name":"초콜릿 쉐이크","description":"달콤하고 부드러운 초콜릿 맛이 가득한 쉐이크로, 달달한 디저트가 생각날 때 추천합니다.","id":13},{"image":".//imgs//Banana.png","price":3490,"name":"바나나 쉐이크","description":"신선한 바나나의 풍미가 가득한 쉐이크로, 간식 또는 디저트로 좋습니다.","id":14},{"image":"C:\\Users\\user\\OneDrive\\문서\\바탕 화면\\addMenu.png","price":5900,"name":"test","description":"test","id":30},{"image":"C:\\BaseNote-release\\images\\game9.jpeg","price":123,"name":"dad","description":"dfadf","id":30},{"image":"C:\\java_project\\TestGUI\\img\\img1.png","price":1112,"name":"중간점검","description":"중간점검~~","id":30}]
+[
+  {
+    "image": ".//imgs//Hamburger.png",
+    "price": 4900,
+    "name": "햄버거",
+    "description": "특제 소스와 신선한 양상추가 더해진 육즙 가득한 쇠고기 버거입니다.",
+    "id": 1
+  },
+  {
+    "image": ".//imgs//French Fries.png",
+    "price": 1900,
+    "name": "감자튀김",
+    "description": "황금빛으로 바삭하게 튀겨진 감자튀김으로, 누구나 좋아하는 클래식한 사이드 메뉴입니다.",
+    "id": 2
+  },
+  {
+    "image": ".//imgs//Clinking Beer Mugs.png",
+    "price": 3900,
+    "name": "맥주",
+    "description": "시원한 맥주로, 갈증을 해소하며 식사와 함께 즐기기에 좋습니다. 여유로운 한 잔의 기쁨을 선사합니다.",
+    "id": 4
+  },
+  {
+    "image": ".//imgs//Green Salad.png",
+    "price": 3900,
+    "name": "그린 샐러드",
+    "description": "다양한 신선한 채소가 들어간 건강한 샐러드로, 상큼한 드레싱과 함께 깔끔한 맛을 즐기실 수 있습니다.",
+    "id": 5
+  },
+  {
+    "image": ".//imgs//Hot Dog.png",
+    "price": 3900,
+    "name": "핫도그",
+    "description": "탱글탱글한 소시지와 신선한 빵이 조화를 이루어 식사나 간식으로 딱 좋은 핫도그입니다.",
+    "id": 6
+  },
+  {
+    "image": ".//imgs//Tropical Drink.png",
+    "price": 3900,
+    "name": "트로피컬 음료",
+    "description": "열대 과일의 풍미를 가득 담은 시원한 음료로, 상쾌하게 목을 적셔줍니다.",
+    "id": 7
+  },
+  {
+    "image": ".//imgs//Cheese Wedge.png",
+    "price": 5400,
+    "name": "치즈버거",
+    "description": "부드러운 치즈가 쇠고기 패티 위에 녹아 더욱 진한 맛을 느낄 수 있는 치즈버거입니다.",
+    "id": 9
+  },
+  {
+    "image": ".//imgs//Glass of Milk.png",
+    "price": 1490,
+    "name": "우유",
+    "description": "신선하고 부드러운 맛의 우유로, 식사와 함께 곁들이기 좋습니다.",
+    "id": 11
+  },
+  {
+    "image": ".//imgs//Chocolate Bar.png",
+    "price": 3490,
+    "name": "초콜릿 쉐이크",
+    "description": "달콤하고 부드러운 초콜릿 맛이 가득한 쉐이크로, 달달한 디저트가 생각날 때 추천합니다.",
+    "id": 13
+  },
+  {
+    "image": ".//imgs//Banana.png",
+    "price": 3490,
+    "name": "바나나 쉐이크",
+    "description": "신선한 바나나의 풍미가 가득한 쉐이크로, 간식 또는 디저트로 좋습니다.",
+    "id": 14
+  }
+ ]
