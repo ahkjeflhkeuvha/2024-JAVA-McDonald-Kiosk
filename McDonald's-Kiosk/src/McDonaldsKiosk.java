@@ -168,7 +168,13 @@ class McDonaldsKiosk extends JFrame {
             priceLabel.setFont(regularfont);
             itemPanel.add(priceLabel, BorderLayout.SOUTH);
             
-            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
+            ImageIcon image = null;
+            try {
+            	image = resizeIcon(menu.getImage(), 200, 200);
+            } catch(Exception e) {
+            	e.printStackTrace();
+            }
+            JLabel imageLabel = new JLabel(image);
             itemPanel.add(imageLabel, BorderLayout.CENTER);
 
             itemPanel.addMouseListener(new MouseAdapter() {
@@ -292,30 +298,41 @@ class McDonaldsKiosk extends JFrame {
         // 주문 목록에 있는 메뉴 항목들 처리
         for (Menu menu : customer.getOrderList().keySet()) {
             System.out.println(menu.getName() + " " + menu.getImage());
-            
+
             // 개별 메뉴 항목을 위한 패널
             JPanel itemPanel = new JPanel();
-            itemPanel.setLayout(new BorderLayout());
+            itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS)); // 수직(BoxLayout)
             itemPanel.setBackground(Color.white);
             itemPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
             // 메뉴 이름
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
             nameLabel.setFont(boldfont);
-            itemPanel.add(nameLabel, BorderLayout.NORTH);
+            nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // 수평 가운데 정렬
+            itemPanel.add(nameLabel);
+
+            // 메뉴 이미지
+            ImageIcon imageIcon = resizeIcon(menu.getImage(), 200, 200);
+            JLabel imageLabel = new JLabel(imageIcon);
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // 수평 가운데 정렬
+            itemPanel.add(imageLabel);
 
             // 메뉴 가격
             JLabel priceLabel = new JLabel(menu.getPrice() + "원", SwingConstants.CENTER);
             priceLabel.setFont(regularfont);
-            itemPanel.add(priceLabel, BorderLayout.SOUTH);
+            priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // 수평 가운데 정렬
+            itemPanel.add(priceLabel);
 
-            // 메뉴 이미지
-            JLabel imageLabel = new JLabel(new ImageIcon(menu.getImage()));
-            itemPanel.add(imageLabel, BorderLayout.CENTER);
+            // 메뉴 수량
+            JLabel qualityLabel = new JLabel(customer.getNum(menu) + "개");
+            qualityLabel.setFont(regularfont);
+            qualityLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // 수평 가운데 정렬
+            itemPanel.add(qualityLabel);
 
             // cartPanel에 개별 메뉴 항목 추가
             cartPanel.add(itemPanel);
         }
+
 
         // 스크롤 가능한 패널 추가
         JScrollPane scrollPane = new JScrollPane(cartPanel); 
@@ -432,12 +449,12 @@ class McDonaldsKiosk extends JFrame {
         System.out.println("---------- 주문 내역 ----------");
 
         receipt += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
-        receiptEmail += "<html><div style='text-align:center; font-size:18px; font-weight:bold; margin-top:100px;'>주문 번호 : " + orderNumber + "<br>결제 방법 : " + method + "<br><br>---------- 주문 내역 ----------<br>";
+        receiptEmail += "결제 방법 : " + method + "\n\n---------- 주문 내역 ----------\n\n";
         
         for (Menu menu : customer.getOrderList().keySet()) {
             int quantity = customer.getOrderList().get(menu);
             receipt += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
-            receiptEmail += "<div style='font-size:16px;'>" + menu.getName() + " x " + quantity + "<br></div>";
+            receiptEmail += menu.getName() + "("+ menu.getPrice()  + ")  x " + quantity + "\n\n";
             price = menu.getPrice();
             num = customer.getOrderList().get(menu);
             tot += price * num;
@@ -447,7 +464,7 @@ class McDonaldsKiosk extends JFrame {
         calculateTotalRevenue();
 
         receipt += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
-        receiptEmail += "<br><div style='font-size:18px; font-weight:bold;'>최종 금액 : " + tot + "원</div>";
+        receiptEmail += "\n\n최종 금액 : " + tot + "원\n\n";
         System.out.println("최종 금액 : " + tot + "원\n");
         receipt += "<br><div style='font-size:14px; color:gray;'>" + message + "<br><br></div></html>";
 
@@ -613,7 +630,7 @@ class McDonaldsKiosk extends JFrame {
             int menuNumber = totOrder.get(menuName); 
             System.out.println(menuName + " : " + menuNumber + " = " + menuPrice * menuNumber);
             
-            JLabel orderLabel = new JLabel(menuName + " : " + menuNumber + "개 = " + menuPrice * menuNumber + "원");
+            JLabel orderLabel = new JLabel(menuName + "(" + menuPrice + ") : " + menuNumber + "개 = " + menuPrice * menuNumber + "원");
             totPrice += menuPrice * menuNumber;
             orderLabel.setFont(regularfont);  // 기본 폰트 설정
             orderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
