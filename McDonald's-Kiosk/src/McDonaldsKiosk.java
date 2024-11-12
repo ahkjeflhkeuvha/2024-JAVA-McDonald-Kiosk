@@ -292,7 +292,7 @@ class McDonaldsKiosk extends JFrame {
 
         // 스크롤 가능하도록 JPanel과 JScrollPane 사용
         JPanel cartPanel = new JPanel();
-        cartPanel.setLayout(new GridLayout(0, 1, 100, 30)); // 메뉴 항목들을 세로로 나열
+        cartPanel.setLayout(new GridLayout(100, 1, 100, 30)); // 메뉴 항목들을 세로로 나열
         cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // 주문 목록에 있는 메뉴 항목들 처리
@@ -303,8 +303,9 @@ class McDonaldsKiosk extends JFrame {
             JPanel itemPanel = new JPanel();
             itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS)); // 수직(BoxLayout)
             itemPanel.setBackground(Color.white);
+            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200)); // 높이 최대 크기 제한
             itemPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
+            
             // 메뉴 이름
             JLabel nameLabel = new JLabel(menu.getName(), SwingConstants.CENTER);
             nameLabel.setFont(boldfont);
@@ -333,10 +334,9 @@ class McDonaldsKiosk extends JFrame {
             cartPanel.add(itemPanel);
         }
 
-
         // 스크롤 가능한 패널 추가
-        JScrollPane scrollPane = new JScrollPane(cartPanel); 
-        add(scrollPane, BorderLayout.CENTER); 
+        JScrollPane scrollPane = new JScrollPane(cartPanel);
+        add(scrollPane, BorderLayout.CENTER);
 
         // 버튼 패널 설정
         JPanel buttonPanel = new JPanel();
@@ -371,6 +371,7 @@ class McDonaldsKiosk extends JFrame {
         revalidate();
         repaint();
     }
+
 
 
     // 결제 페이지
@@ -869,7 +870,7 @@ class McDonaldsKiosk extends JFrame {
 
         // JSON 파일이 없으면 빈 메뉴로 시작
         if (!file.exists()) {
-            System.out.println("menu.json 파일이 존재하지 않아 빈 메뉴로 시작합니다.");
+            System.out.println("menu.jfson 파일이 존재하지 않아 빈 메뉴로 시작합니다.");
             return;
         }
 
