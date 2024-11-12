@@ -494,7 +494,7 @@ class McDonaldsKiosk extends JFrame {
         receiptEmail += "\n\n최종 금액 : " + tot + "원\n\n";
         System.out.println("최종 금액 : " + tot + "원\n");
         receipt += "<br><div style='font-size:14px; color:gray;'>" + message + "<br><br></div></html>";
-        resPage += "<br><div style='font-size:14px; color:gray;'>" + pay + "<br><br></div></html>";
+        resPage += "<br><div style='font-size:14px; color:gray;'>결제 방법 : " + pay + "<br><br></div></html>";
 
         // 영수증 레이블 설정
         JLabel receiptLabel = new JLabel(receipt);
