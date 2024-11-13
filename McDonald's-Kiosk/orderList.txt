@@ -1,6 +1,0 @@
-Order Number: 1
-Payment Method: Cash
-Items Ordered:
-Hamburger x 1
-French Fries x 1
-
